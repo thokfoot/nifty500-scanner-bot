@@ -13,7 +13,7 @@ import pytz
 from config import (
     RANGE_PCT, CLOSE_POS_MAX, VOL_MULT, ENTRY_OFFSET_PCT,
     SL_PCT, TARGET1_PCT, TARGET2_PCT, DAILY_PERIOD, INTRA_PERIOD,
-    MAX_WORKERS, INITIAL_CAPITAL, PER_TRADE_AMOUNT
+    MAX_WORKERS, INITIAL_CAPITAL, PER_TRADE_AMOUNT, MAX_TRADES_PER_DAY
 )
 from scanner import is_volatile_down_close
 from portfolio import load_portfolio, enter_position, check_exits, get_portfolio_summary, save_portfolio
@@ -226,9 +226,12 @@ def main():
         # ── 5. Scan for new signals ──
         tradeable, watchlist = run_scan(daily, data_15m)
 
-        # ── 6. Enter new positions ──
+        # ── 6. Enter new positions (max 8/day sweet spot) ──
         entered = []
         for sig in tradeable:
+            if len(entered) >= MAX_TRADES_PER_DAY:
+                log(f"  Max {MAX_TRADES_PER_DAY} trades/day reached, skipping rest")
+                break
             already_in = any(p["ticker"] == sig["ticker"] and p["status"] == "OPEN"
                             for p in portfolio.get("open_positions", []))
             if already_in:

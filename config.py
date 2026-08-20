@@ -23,6 +23,7 @@ TOTAL_COST = (BROKERAGE + SLIPPAGE) * 2  # 0.30% round trip
 # ── Capital ──
 INITIAL_CAPITAL = 200000.0  # Rs 2 lakh paper capital
 PER_TRADE_AMOUNT = 10000.0  # Rs 10,000 fixed per trade
+MAX_TRADES_PER_DAY = 8      # Sweet spot from backtest (8/day = 100% WR)
 
 # ── Data ──
 DAILY_PERIOD = "1y"
