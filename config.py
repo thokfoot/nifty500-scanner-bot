@@ -21,8 +21,8 @@ SLIPPAGE = 0.0005        # 0.05% per side
 TOTAL_COST = (BROKERAGE + SLIPPAGE) * 2  # 0.30% round trip
 
 # ── Capital ──
-INITIAL_CAPITAL = 100000.0  # Rs 1 lakh paper capital
-RISK_PER_TRADE = 0.02       # 2% risk per trade
+INITIAL_CAPITAL = 200000.0  # Rs 2 lakh paper capital
+PER_TRADE_AMOUNT = 10000.0  # Rs 10,000 fixed per trade
 
 # ── Data ──
 DAILY_PERIOD = "1y"

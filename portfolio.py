@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 import pandas as pd
 import numpy as np
-from config import PORTFOLIO_FILE, INITIAL_CAPITAL, TOTAL_COST
+from config import PORTFOLIO_FILE, INITIAL_CAPITAL, TOTAL_COST, PER_TRADE_AMOUNT
 
 def load_portfolio() -> Dict:
     if os.path.exists(PORTFOLIO_FILE):
@@ -31,8 +31,7 @@ def enter_position(portfolio: Dict, ticker: str, entry_price: float,
                    sl: float, t1: float, t2: float, details: Dict) -> Dict:
     """Enter a new paper position."""
     capital = portfolio["capital"]
-    risk_amount = capital * 0.02  # 2% risk
-    qty = int(risk_amount / (entry_price * 0.025))  # risk per share
+    qty = int(PER_TRADE_AMOUNT / entry_price)
     if qty < 1:
         qty = 1
 
