@@ -195,3 +195,22 @@ RECENT CLOSED:
   ASTERDM TIME_EXIT | -0.06% net
 ⏰ TIME_EXIT: ASTERDM
 @ 761.35 | Net -0.06% (Rs -6)
+
+==================================================
+RUN 2026-08-21 16:22 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-08-21 16:22 IST [LIVE]_
+Scanned: 500 | Signals: 0
+Executed: 0 | Closed: 0
+P&L today: Rs *-280* | WinRate: 0.0%
+📋 Pending: CROMPTON, CCL, HSCL
+
+PORTFOLIO SUMMARY
+Capital: Rs 199,720 (-0.14%)
+Total P&L: Rs -3
+Win/Loss: 0W / 2L (0.0% WR)
+Open Positions: 0
+
+RECENT CLOSED:
+  HSCL STOP_LOSS | -2.80% net
+  ASTERDM TIME_EXIT | -0.06% net
