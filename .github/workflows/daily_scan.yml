@@ -1,15 +1,24 @@
 name: Daily Nifty 500 Scan + Portfolio
 on:
   schedule:
-    # 10:00 UTC = 3:30 PM IST (after market close)
-    - cron: '0 10 * * 1-5'
+    # 11:00 UTC = 4:30 PM IST (after market close; gives Yahoo time to finalize daily bars)
+    - cron: '0 11 * * 1-5'
   workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nifty500-scan
+  cancel-in-progress: false
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,3 +33,16 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python main.py
+
+      - name: Commit state back to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ logs/
+          if git diff --cached --quiet; then
+            echo "No state changes to commit"
+          else
+            git commit -m "state: bot run $(date -u +%Y-%m-%dT%H:%MZ)"
+            git pull --rebase origin main
+            git push
+          fi

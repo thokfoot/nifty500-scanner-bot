@@ -1,0 +1,107 @@
+{
+  "pending": [
+    {
+      "ticker": "HSCL",
+      "signal_date": "2026-08-20",
+      "prev_close": 704.2,
+      "entry_price": 698.57,
+      "sl": 681.1,
+      "t1": 706.95,
+      "t2": 718.13,
+      "details": {
+        "daily_range_pct": 10.37,
+        "close_position": 0.121,
+        "rsi": 36.7,
+        "volume_spike": true,
+        "below_vwap": true,
+        "below_sma": true
+      }
+    },
+    {
+      "ticker": "ASTERDM",
+      "signal_date": "2026-08-20",
+      "prev_close": 765.65,
+      "entry_price": 759.52,
+      "sl": 740.54,
+      "t1": 768.64,
+      "t2": 780.79,
+      "details": {
+        "daily_range_pct": 5.59,
+        "close_position": 0.227,
+        "rsi": 32.9,
+        "volume_spike": true,
+        "below_vwap": true,
+        "below_sma": true
+      }
+    },
+    {
+      "ticker": "3MINDIA",
+      "signal_date": "2026-08-19",
+      "prev_close": 33505.0,
+      "entry_price": 33236.96,
+      "sl": 32406.04,
+      "t1": 33635.8,
+      "t2": 34167.59,
+      "details": {
+        "daily_range_pct": 5.23,
+        "close_position": 0.086,
+        "rsi": 37.4,
+        "volume_spike": true,
+        "below_vwap": true,
+        "below_sma": true
+      }
+    },
+    {
+      "ticker": "ADANIENSOL",
+      "signal_date": "2026-08-19",
+      "prev_close": 1540.7,
+      "entry_price": 1528.37,
+      "sl": 1490.16,
+      "t1": 1546.71,
+      "t2": 1571.17,
+      "details": {
+        "daily_range_pct": 4.45,
+        "close_position": 0.061,
+        "rsi": 25.3,
+        "volume_spike": true,
+        "below_vwap": true,
+        "below_sma": true
+      }
+    },
+    {
+      "ticker": "JSWCEMENT",
+      "signal_date": "2026-08-19",
+      "prev_close": 123.66,
+      "entry_price": 122.67,
+      "sl": 119.6,
+      "t1": 124.14,
+      "t2": 126.11,
+      "details": {
+        "daily_range_pct": 3.95,
+        "close_position": 0.148,
+        "rsi": 27.7,
+        "volume_spike": true,
+        "below_vwap": true,
+        "below_sma": true
+      }
+    },
+    {
+      "ticker": "SOBHA",
+      "signal_date": "2026-08-19",
+      "prev_close": 1274.1,
+      "entry_price": 1263.91,
+      "sl": 1232.31,
+      "t1": 1279.07,
+      "t2": 1299.3,
+      "details": {
+        "daily_range_pct": 4.09,
+        "close_position": 0.118,
+        "rsi": 30.7,
+        "volume_spike": true,
+        "below_vwap": true,
+        "below_sma": true
+      }
+    }
+  ],
+  "executed": []
+}

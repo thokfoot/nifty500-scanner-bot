@@ -30,6 +30,12 @@ DAILY_PERIOD = "1y"
 INTRA_PERIOD = "60d"
 MAX_WORKERS = 8
 
+# ── Signal Lifecycle ──
+PENDING_FILE = "data/pending_signals.json"   # watchlist persisted between runs
+GAP_MAX_PCT = 1.5                            # skip entry if D+1 opens >1.5% above prev close
+SIGNAL_EXPIRY_DAYS = 7                       # drop unfilled signals older than this
+EXECUTE_AFTER = "15:15"                      # IST; execute pending only after this (full-day data)
+
 # ── Telegram ──
 TG_TOKEN = os.getenv("TELEGRAM_TOKEN") or os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN")
 TG_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID") or os.getenv("CHAT_ID")

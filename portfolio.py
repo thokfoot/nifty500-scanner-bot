@@ -6,7 +6,14 @@ from datetime import datetime
 from typing import Dict, List, Optional
 import pandas as pd
 import numpy as np
+import pytz
 from config import PORTFOLIO_FILE, INITIAL_CAPITAL, TOTAL_COST, PER_TRADE_AMOUNT
+
+IST = pytz.timezone("Asia/Kolkata")
+
+
+def ist_today() -> str:
+    return datetime.now(IST).strftime("%Y-%m-%d")
 
 def load_portfolio() -> Dict:
     if os.path.exists(PORTFOLIO_FILE):
@@ -56,8 +63,11 @@ def enter_position(portfolio: Dict, ticker: str, entry_price: float,
     save_portfolio(portfolio)
     return pos
 
-def check_exits(portfolio: Dict, data_15m_by_date: Dict[str, pd.DataFrame]) -> List[Dict]:
-    """Check open positions for SL/T1/T2 exits using 15m CLOSE-based logic."""
+def check_exits(portfolio: Dict, data_15m: Dict[str, Dict[str, pd.DataFrame]]) -> List[Dict]:
+    """Check open positions for SL/T1/T2 exits using 15m CLOSE-based logic.
+
+    data_15m structure: {ticker: {date_str: 15m DataFrame}}
+    """
     closed = []
     remaining = []
 
@@ -66,12 +76,13 @@ def check_exits(portfolio: Dict, data_15m_by_date: Dict[str, pd.DataFrame]) -> L
             remaining.append(pos)
             continue
 
+        ticker_data = data_15m.get(pos["ticker"], {})
         trade_date = pos["entry_date"]
-        if trade_date not in data_15m_by_date:
+        if trade_date not in ticker_data:
             remaining.append(pos)
             continue
 
-        df_15m = data_15m_by_date[trade_date]
+        df_15m = ticker_data[trade_date]
         if len(df_15m) < 2:
             remaining.append(pos)
             continue
@@ -139,7 +150,7 @@ def check_exits(portfolio: Dict, data_15m_by_date: Dict[str, pd.DataFrame]) -> L
         pos["status"] = "CLOSED"
         pos["pnl"] = round(net_pnl, 3)
         pos["exit_price"] = round(exit_price, 2)
-        pos["exit_date"] = datetime.now().strftime("%Y-%m-%d")
+        pos["exit_date"] = ist_today()
         pos["exit_reason"] = result
         pos["sl_moved_to_be"] = sl_moved
         pos["half_booked"] = half_booked
@@ -156,6 +167,26 @@ def check_exits(portfolio: Dict, data_15m_by_date: Dict[str, pd.DataFrame]) -> L
     portfolio["open_positions"] = remaining
     save_portfolio(portfolio)
     return closed
+
+def record_closed_trade(portfolio: Dict, trade: Dict) -> Dict:
+    """Record an already-completed trade (from executor) into the portfolio."""
+    net_pnl = trade["net_pnl_pct"]
+    portfolio["closed_trades"].append(trade)
+    portfolio["total_pnl"] = round(portfolio.get("total_pnl", 0) + net_pnl, 3)
+    if net_pnl > 0:
+        portfolio["wins"] = portfolio.get("wins", 0) + 1
+    else:
+        portfolio["losses"] = portfolio.get("losses", 0) + 1
+    portfolio["capital"] = round(
+        portfolio.get("capital", INITIAL_CAPITAL)
+        + (trade["entry_price"] * trade["qty"] * net_pnl / 100.0), 2
+    )
+    save_portfolio(portfolio)
+    return trade
+
+def position_size(entry_price: float) -> int:
+    qty = int(PER_TRADE_AMOUNT / entry_price)
+    return max(qty, 1)
 
 def get_portfolio_summary(portfolio: Dict) -> str:
     """Generate a text summary of portfolio state."""

@@ -1,6 +1,13 @@
 """
 Nifty 500 Volatile Down-Close Paper Trading Bot
-Main orchestrator: scan -> signal -> enter -> monitor -> log -> notify
+Flow:
+  1. Load portfolio + pending signals (persisted in repo)
+  2. Download daily + 15m data
+  3. Execute due pending signals on their D+1 (limit fill + CLOSE-based exits)
+  4. Safety-net exit check for any open positions
+  5. Scan latest bars for NEW signals -> save as pending (watchlist for next day)
+  6. Save state, log Excel, notify Telegram
+State is committed back to the repo by the workflow.
 """
 import sys, os, time, traceback
 from datetime import datetime
@@ -11,12 +18,13 @@ import yfinance as yf
 import pytz
 
 from config import (
-    RANGE_PCT, CLOSE_POS_MAX, VOL_MULT, ENTRY_OFFSET_PCT,
-    SL_PCT, TARGET1_PCT, TARGET2_PCT, DAILY_PERIOD, INTRA_PERIOD,
-    MAX_WORKERS, INITIAL_CAPITAL, PER_TRADE_AMOUNT, MAX_TRADES_PER_DAY
+    RANGE_PCT, CLOSE_POS_MAX, VOL_MULT,
+    MAX_WORKERS, INITIAL_CAPITAL, MAX_TRADES_PER_DAY, EXECUTE_AFTER,
 )
 from scanner import is_volatile_down_close
-from portfolio import load_portfolio, enter_position, check_exits, get_portfolio_summary, save_portfolio
+from portfolio import load_portfolio, check_exits, record_closed_trade, get_portfolio_summary, ist_today
+from executor import execute_signal
+from signals_store import load_store, save_store, add_signals, mark_executed, cleanup, find_trade_date
 from notifier import send_msg, send_doc
 from excel_logger import log_scan, log_signals, log_trade, log_error, log_portfolio, get_excel_path, get_excel_exists
 
@@ -71,7 +79,7 @@ def download_data(tickers, max_workers=8):
 
     def _dl_daily(t):
         try:
-            df = yf.download(f"{t}.NS", period=DAILY_PERIOD, interval="1d",
+            df = yf.download(f"{t}.NS", period="1y", interval="1d",
                              auto_adjust=True, progress=False, threads=False)
             if df is not None and not df.empty:
                 if isinstance(df.columns, pd.MultiIndex):
@@ -89,7 +97,7 @@ def download_data(tickers, max_workers=8):
 
     def _dl_15m(t):
         try:
-            df = yf.download(f"{t}.NS", period=INTRA_PERIOD, interval="15m",
+            df = yf.download(f"{t}.NS", period="60d", interval="15m",
                              auto_adjust=True, progress=False, threads=False)
             if df is not None and not df.empty:
                 if isinstance(df.columns, pd.MultiIndex):
@@ -128,66 +136,118 @@ def download_data(tickers, max_workers=8):
     log(f"15m: {len(data_15m)}/{len(daily)} ok")
     return daily, data_15m
 
-def run_scan(daily, data_15m):
-    tradeable = []
-    watchlist = []
+def build_signal(ticker, df, idx):
+    """Build a full signal dict from daily bar at idx."""
+    ok, details = is_volatile_down_close(df, idx, RANGE_PCT, CLOSE_POS_MAX, VOL_MULT)
+    if not ok:
+        return None
+    sig_date = df.index[idx].strftime("%Y-%m-%d")
+    prev_close = float(df.iloc[idx]["Close"])
+    entry_price = prev_close * 0.992          # 0.8% below prev close
+    sl = entry_price * 0.975                  # 2.5% below entry
+    t1 = entry_price * 1.012                  # 1.2% above entry
+    t2 = entry_price * 1.028                  # 2.8% above entry
+    return {
+        "ticker": ticker,
+        "signal_date": sig_date,
+        "prev_close": round(prev_close, 2),
+        "entry_price": round(entry_price, 2),
+        "sl": round(sl, 2),
+        "t1": round(t1, 2),
+        "t2": round(t2, 2),
+        "details": details,
+    }
 
+def scan_new_signals(daily):
+    """Scan recent daily bars for fresh signals.
+
+    Only bars from completed sessions qualify. Today's live (partial) bar is
+    accepted only after 15:15 IST (or EXECUTE_NOW=1) so incomplete candles
+    don't create false signals with wrong levels.
+    Older bars are re-checked too - dedupe in signals_store prevents repeats.
+    """
+    now = datetime.now(IST)
+    today_str = now.strftime("%Y-%m-%d")
+    cutoff = now.replace(hour=int(EXECUTE_AFTER[:2]), minute=int(EXECUTE_AFTER[3:5]),
+                         second=0, microsecond=0)
+    allow_today_bar = now >= cutoff or os.getenv("EXECUTE_NOW") == "1"
+
+    found = []
     for ticker, df in daily.items():
         try:
-            idx = len(df) - 1
-            if idx < 20:
+            n = len(df)
+            if n < 25:
                 continue
-            ok, details = is_volatile_down_close(df, idx, RANGE_PCT, CLOSE_POS_MAX, VOL_MULT)
-            if not ok:
-                continue
-
-            sig_date = df.index[idx].strftime("%Y-%m-%d")
-            prev_close = df.iloc[idx]["Close"]
-            entry_price = prev_close * (1.0 - ENTRY_OFFSET_PCT / 100.0)
-            sl = entry_price * (1.0 - SL_PCT / 100.0)
-            t1 = entry_price * (1.0 + TARGET1_PCT / 100.0)
-            t2 = entry_price * (1.0 + TARGET2_PCT / 100.0)
-
-            entry = {
-                "ticker": ticker,
-                "signal_date": sig_date,
-                "prev_close": round(prev_close, 2),
-                "entry_price": round(entry_price, 2),
-                "sl": round(sl, 2),
-                "t1": round(t1, 2),
-                "t2": round(t2, 2),
-                "details": details,
-            }
-
-            if idx + 1 < len(df):
-                trade_date = df.index[idx + 1].strftime("%Y-%m-%d")
-                entry["trade_date"] = trade_date
-                if trade_date in data_15m.get(ticker, {}):
-                    tradeable.append(entry)
-                else:
-                    watchlist.append(entry)
-            else:
-                watchlist.append(entry)
-        except:
+            for idx in (n - 1, n - 2):        # latest bar + previous (Yahoo lag safety)
+                if idx < 20:
+                    continue
+                bar_date = df.index[idx].strftime("%Y-%m-%d")
+                if bar_date > today_str:
+                    continue
+                if bar_date == today_str and not allow_today_bar:
+                    continue                  # incomplete live bar - wait for close
+                sig = build_signal(ticker, df, idx)
+                if sig:
+                    found.append(sig)
+                    break                     # one signal per ticker
+        except Exception:
             pass
+    return found
 
-    log(f"Found {len(tradeable)} tradeable, {len(watchlist)} watchlist")
-    return tradeable, watchlist
-
-def format_signals_msg(signals, title="SIGNALS"):
-    if not signals:
-        return ""
-    lines = [f"{title} ({len(signals)})"]
-    for s in signals:
-        d = s["details"]
-        lines.append(f"\n{s['ticker']}")
-        lines.append(f"  Range: {d['daily_range_pct']}% | CP: {d['close_position']} | RSI: {d['rsi']}")
-        lines.append(f"  Entry: Rs {s['entry_price']} | SL: Rs {s['sl']} | T1: Rs {s['t1']} | T2: Rs {s['t2']}")
-    return "\n".join(lines)
-
-def format_scan_summary(tickers_ok, tickers_total, signals_count, errors):
+def process_pending(store, portfolio, data_15m):
+    """Execute pending signals whose D+1 data has arrived."""
     now = datetime.now(IST)
-    return f"Scan: {tickers_ok}/{tickers_total} stocks | {signals_count} signals | {errors} errors"
+    today_str = now.strftime("%Y-%m-%d")
+    cutoff = now.replace(hour=int(EXECUTE_AFTER[:2]), minute=int(EXECUTE_AFTER[3:5]), second=0, microsecond=0)
+    force = os.getenv("EXECUTE_NOW") == "1"
+
+    executed_trades, skipped, deferred = [], [], []
+    still_pending = []
+
+    for sig in store["pending"]:
+        try:
+            ticker_dates = data_15m.get(sig["ticker"], {}).keys()
+            trade_date = find_trade_date(ticker_dates, sig["signal_date"])
+
+            if trade_date is None:
+                still_pending.append(sig)     # D+1 data not available yet
+                continue
+
+            # Wait for full-day data before simulating today's trade
+            if trade_date == today_str and now < cutoff and not force:
+                deferred.append(sig)
+                still_pending.append(sig)
+                continue
+
+            day_df = data_15m[sig["ticker"]][trade_date]
+            outcome = execute_signal(sig, day_df)
+
+            if outcome["status"] == "EXECUTED":
+                trade = outcome["trade"]
+                record_closed_trade(portfolio, trade)
+                executed_trades.append(trade)
+                mark_executed(store, sig, trade_date, trade)
+                try:
+                    log_trade(trade, status="CLOSED")
+                except Exception as e:
+                    log(f"[LOG ERROR] trade log failed: {e}")
+            else:
+                info = outcome.get("info", "")
+                skipped.append({"sig": sig, "status": outcome["status"], "info": info})
+                mark_executed(store, sig, trade_date,
+                              {"exit_reason": outcome["status"], "net_pnl_pct": None})
+        except Exception as e:
+            log(f"  [ERROR] processing {sig['ticker']}: {e}")
+            still_pending.append(sig)
+
+    store["pending"] = still_pending
+    return executed_trades, skipped, deferred
+
+def format_signal_line(s):
+    d = s.get("details", {})
+    return (f"  {s['ticker']}\n"
+            f"    Range: {d.get('daily_range_pct','?')}% | CP: {d.get('close_position','?')} | RSI: {d.get('rsi','?')}\n"
+            f"    Entry: Rs {s['entry_price']} | SL: Rs {s['sl']} | T1: Rs {s['t1']} | T2: Rs {s['t2']}")
 
 def main():
     start_time = time.time()
@@ -199,9 +259,11 @@ def main():
     log(f"Starting Nifty 500 Volatile Down-Close Bot - {date_str} {time_str}")
 
     try:
-        # ── 1. Load portfolio ──
+        # ── 1. Load state ──
         portfolio = load_portfolio()
-        log(f"Portfolio: Rs {portfolio.get('capital', INITIAL_CAPITAL):,.0f}")
+        store = load_store()
+        log(f"Portfolio: Rs {portfolio.get('capital', INITIAL_CAPITAL):,.0f} | "
+            f"Pending signals: {len(store['pending'])}")
 
         # ── 2. Get tickers ──
         tickers = get_nifty500_tickers()
@@ -209,11 +271,21 @@ def main():
         # ── 3. Download data ──
         daily, data_15m = download_data(tickers, MAX_WORKERS)
 
-        # ── 4. Check exits for existing positions ──
+        # ── 4. Execute due pending signals ──
+        executed, skipped, deferred = process_pending(store, portfolio, data_15m)
+        for t in executed:
+            log(f"  EXECUTED {t['ticker']} @ Rs {t['entry_price']} -> {t['exit_reason']} "
+                f"| Net P&L {t['net_pnl_pct']:+.2f}%")
+        for s in skipped:
+            log(f"  SKIPPED {s['sig']['ticker']} ({s['status']}) {s['info']}")
+        if deferred:
+            log(f"  DEFERRED {len(deferred)} signal(s) - waiting for full-day data")
+
+        # ── 5. Safety-net exit check for legacy open positions ──
         closed = []
-        if portfolio.get("open_positions"):
-            open_count = len([p for p in portfolio["open_positions"] if p["status"] == "OPEN"])
-            log(f"Checking exits for {open_count} positions...")
+        open_positions = [p for p in portfolio.get("open_positions", []) if p["status"] == "OPEN"]
+        if open_positions:
+            log(f"Checking exits for {len(open_positions)} open position(s)...")
             closed = check_exits(portfolio, data_15m)
             for t in closed:
                 log(f"  CLOSED {t['ticker']}: {t['exit_reason']} P&L {t['pnl']:+.2f}%")
@@ -223,49 +295,30 @@ def main():
                     log(f"  [LOG ERROR] trade log failed: {e}")
                     error_count += 1
 
-        # ── 5. Scan for new signals ──
-        tradeable, watchlist = run_scan(daily, data_15m)
+        # ── 6. Scan for NEW signals ──
+        new_signals = scan_new_signals(daily)
+        added = add_signals(store, new_signals)
+        if added:
+            for s in added:
+                log(f"  NEW SIGNAL {s['ticker']} (signal date {s['signal_date']}) -> watchlist")
 
-        # ── 6. Enter new positions (max 8/day sweet spot) ──
-        entered = []
-        for sig in tradeable:
-            if len(entered) >= MAX_TRADES_PER_DAY:
-                log(f"  Max {MAX_TRADES_PER_DAY} trades/day reached, skipping rest")
-                break
-            already_in = any(p["ticker"] == sig["ticker"] and p["status"] == "OPEN"
-                            for p in portfolio.get("open_positions", []))
-            if already_in:
-                log(f"  Skip {sig['ticker']}: already in position")
-                continue
+        # ── 7. Expire stale pendings & persist state ──
+        expired = cleanup(store)
+        if expired:
+            log(f"  EXPIRED {len(expired)} stale signal(s)")
+        save_store(store)
 
-            pos = enter_position(
-                portfolio,
-                ticker=sig["ticker"],
-                entry_price=sig["entry_price"],
-                sl=sig["sl"],
-                t1=sig["t1"],
-                t2=sig["t2"],
-                details=sig["details"],
-            )
-            entered.append(pos)
-            log(f"  ENTERED {sig['ticker']} @ Rs {sig['entry_price']} | SL {sig['sl']} T1 {sig['t1']} T2 {sig['t2']}")
-            try:
-                log_trade(pos, status="ENTERED")
-            except Exception as e:
-                log(f"  [LOG ERROR] trade log failed: {e}")
-                error_count += 1
-
-        # ── 7. Log everything to Excel ──
+        # ── 8. Log everything to Excel ──
         duration = time.time() - start_time
         try:
             log_scan(
                 stocks_scanned=len(tickers),
                 daily_ok=len(daily),
                 intraday_ok=len(data_15m),
-                signals_found=len(tradeable) + len(watchlist),
-                tradeable=len(tradeable),
-                watchlist=len(watchlist),
-                entered=len(entered),
+                signals_found=len(new_signals),
+                tradeable=len(executed),
+                watchlist=len(added),
+                entered=len(executed),
                 closed=len(closed),
                 errors=error_count,
                 duration=duration,
@@ -275,57 +328,70 @@ def main():
             error_count += 1
 
         try:
-            if tradeable:
-                log_signals(tradeable, signal_type="TRADEABLE")
-            if watchlist:
-                log_signals(watchlist, signal_type="WATCHLIST")
+            if added:
+                log_signals(added, signal_type="WATCHLIST")
+            if executed:
+                log_signals([{"ticker": t["ticker"], "signal_date": t["signal_date"],
+                              "prev_close": "", "entry_price": t["entry_price"], "sl": t["sl"],
+                              "t1": t["t1"], "t2": t["t2"], "details": t.get("details", {})}
+                             for t in executed], signal_type="EXECUTED")
         except Exception as e:
             log(f"[LOG ERROR] signal log failed: {e}")
             error_count += 1
 
         try:
-            portfolio = load_portfolio()
-            log_portfolio(portfolio)
+            log_portfolio(load_portfolio())
         except Exception as e:
             log(f"[LOG ERROR] portfolio log failed: {e}")
             error_count += 1
 
-        # ── 8. Build Telegram message ──
+        # ── 9. Build Telegram message ──
         lines = []
         lines.append(f"{'='*40}")
         lines.append(f"  NIFTY 500 VOLATILE DOWN-CLOSE BOT")
         lines.append(f"  {date_str} {time_str}")
         lines.append(f"{'='*40}")
-
         lines.append("")
-        lines.append(format_scan_summary(len(daily), len(tickers), len(tradeable) + len(watchlist), error_count))
+        lines.append(f"Scan: {len(daily)}/{len(tickers)} stocks | "
+                     f"{len(executed)} executed | {len(added)} new signals | {error_count} errors")
 
-        if entered:
+        if executed:
             lines.append("")
-            lines.append(f"NEW ENTRIES ({len(entered)}):")
-            for p in entered:
-                lines.append(f"  {p['ticker']} @ Rs {p['entry_price']}")
-                lines.append(f"    SL: Rs {p['sl']} | T1: Rs {p['t1']} | T2: Rs {p['t2']}")
+            lines.append(f"TRADES EXECUTED ({len(executed)}):")
+            for t in executed:
+                emoji = "+" if t["net_pnl_pct"] > 0 else ""
+                lines.append(f"  {emoji}{t['ticker']} @ Rs {t['entry_price']} x{t['qty']}")
+                lines.append(f"    Exit: {t['exit_reason']} @ Rs {t['exit_price']} | Net P&L: {t['net_pnl_pct']:+.2f}%")
+
+        if skipped:
+            lines.append("")
+            lines.append(f"SKIPPED ({len(skipped)}):")
+            for s in skipped:
+                lines.append(f"  {s['sig']['ticker']} - {s['status']} {s['info']}")
+
+        if added:
+            lines.append("")
+            lines.append(f"NEW WATCHLIST ({len(added)}) - for next trading day:")
+            for s in added:
+                lines.append(format_signal_line(s))
+
+        if deferred:
+            lines.append("")
+            lines.append(f"PENDING ({len(deferred)}) - will execute after {EXECUTE_AFTER} IST:")
+            for s in deferred:
+                lines.append(f"  {s['ticker']} | Entry Rs {s['entry_price']} | SL Rs {s['sl']} | T1 Rs {s['t1']} | T2 Rs {s['t2']}")
 
         if closed:
             lines.append("")
-            lines.append(f"CLOSED ({len(closed)}):")
+            lines.append(f"CLOSED OPEN POSITIONS ({len(closed)}):")
             for t in closed:
                 emoji = "+" if t["pnl"] > 0 else "-"
                 lines.append(f"  {emoji} {t['ticker']} {t['exit_reason']} | P&L {t['pnl']:+.2f}%")
 
-        if tradeable:
-            lines.append("")
-            lines.append(format_signals_msg(tradeable, "TRADEABLE (enter now)"))
-        if watchlist:
-            lines.append("")
-            lines.append(format_signals_msg(watchlist, "WATCHLIST (for tomorrow)"))
-
-        portfolio = load_portfolio()
         lines.append("")
-        lines.append(get_portfolio_summary(portfolio))
+        lines.append(get_portfolio_summary(load_portfolio()))
 
-        # ── 9. Send to Telegram ──
+        # ── 10. Send to Telegram ──
         msg = "\n".join(lines)
         if len(msg) > 4000:
             msg = msg[:4000]
@@ -333,12 +399,12 @@ def main():
         log("Sending to Telegram...")
         send_msg(msg)
 
-        # ── 10. Send Excel file ──
+        # ── 11. Send Excel file ──
         if get_excel_exists():
             log("Sending Excel log...")
             send_doc(get_excel_path(), caption=f"Trade Log - {date_str}")
 
-        # ── 11. Save text log ──
+        # ── 12. Save text log ──
         os.makedirs(LOG_DIR, exist_ok=True)
         log_path = os.path.join(LOG_DIR, f"scan_{date_str}.txt")
         with open(log_path, "w", encoding="utf-8") as f:
