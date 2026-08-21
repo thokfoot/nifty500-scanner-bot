@@ -98,3 +98,22 @@ Open Positions: 2
 OPEN POSITIONS:
   HSCL @ Rs 698.57 x14 | SL 681.1 T1 706.95 T2 718.13
   ASTERDM @ Rs 759.52 x13 | SL 740.54 T1 768.64 T2 780.79
+
+==================================================
+RUN 2026-08-21 13:29 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-08-21 13:29 IST [LIVE]_
+Scanned: 500 | Signals: 0
+Executed: 0 | Closed: 0
+P&L today: Rs *+0* | WinRate: 0.0%
+🟢 Open: HSCL@698.57, ASTERDM@759.52
+
+PORTFOLIO SUMMARY
+Capital: Rs 200,000 (+0.00%)
+Total P&L: Rs +0
+Win/Loss: 0W / 0L (0.0% WR)
+Open Positions: 2
+
+OPEN POSITIONS:
+  HSCL @ Rs 698.57 x14 | SL 681.1 T1 706.95 T2 718.13
+  ASTERDM @ Rs 759.52 x13 | SL 740.54 T1 768.64 T2 780.79
