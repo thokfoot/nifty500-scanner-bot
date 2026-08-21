@@ -1,5 +1,29 @@
 {
-  "pending": [],
+  "pending": [
+    {
+      "ticker": "CROMPTON",
+      "signal_date": "2026-08-21",
+      "prev_close": 251.25,
+      "entry_price": 249.24,
+      "sl": 243.01,
+      "t1": 252.23,
+      "t2": 256.22,
+      "details": {
+        "daily_range_pct": 3.83,
+        "close_position": 0.188,
+        "volume": 10905541,
+        "vol_ma20": 3783265,
+        "volume_spike": "True",
+        "close": 251.25,
+        "vwap": 254.77,
+        "below_vwap": "True",
+        "rsi": 34.7,
+        "rsi_ok": "True",
+        "sma20": 253.7,
+        "below_sma": "True"
+      }
+    }
+  ],
   "executed": [
     {
       "ticker": "3MINDIA",

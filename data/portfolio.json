@@ -15,8 +15,8 @@
       "half_booked": false,
       "pnl_banked_pct": 0.0,
       "entry_ts": "2026-08-21 09:15:00",
-      "last_candle_ts": "2026-08-21 13:30:00",
-      "day_low": 688.2000122070312,
+      "last_candle_ts": "2026-08-21 14:15:00",
+      "day_low": 680.5499877929688,
       "day_high": 710.8499755859375,
       "status": "OPEN",
       "details": {
@@ -41,9 +41,9 @@
       "half_booked": false,
       "pnl_banked_pct": 0.0,
       "entry_ts": "2026-08-21 09:15:00",
-      "last_candle_ts": "2026-08-21 13:15:00",
-      "day_low": 752.1500244140625,
-      "day_high": 765.9000244140625,
+      "last_candle_ts": "2026-08-21 14:15:00",
+      "day_low": 751.7000122070312,
+      "day_high": 766.2000122070312,
       "status": "OPEN",
       "details": {
         "daily_range_pct": 5.59,
