@@ -1,34 +1,7 @@
 {
-  "capital": 199726.06,
+  "capital": 199720.23,
   "initial_capital": 200000.0,
-  "holdings": [
-    {
-      "ticker": "ASTERDM",
-      "signal_date": "2026-08-20",
-      "trade_date": "2026-08-21",
-      "entry_price": 759.52,
-      "qty": 13,
-      "sl": 740.54,
-      "sl_eff": 740.54,
-      "t1": 768.64,
-      "t2": 780.79,
-      "half_booked": false,
-      "pnl_banked_pct": 0.0,
-      "entry_ts": "2026-08-21 09:15:00",
-      "last_candle_ts": "2026-08-21 15:00:00",
-      "day_low": 751.7000122070312,
-      "day_high": 766.2000122070312,
-      "status": "OPEN",
-      "details": {
-        "daily_range_pct": 5.59,
-        "close_position": 0.227,
-        "rsi": 32.9,
-        "volume_spike": true,
-        "below_vwap": true,
-        "below_sma": true
-      }
-    }
-  ],
+  "holdings": [],
   "closed_trades": [
     {
       "ticker": "HSCL",
@@ -56,6 +29,37 @@
         "daily_range_pct": 10.37,
         "close_position": 0.121,
         "rsi": 36.7,
+        "volume_spike": true,
+        "below_vwap": true,
+        "below_sma": true
+      }
+    },
+    {
+      "ticker": "ASTERDM",
+      "signal_date": "2026-08-20",
+      "entry_date": "2026-08-21",
+      "exit_date": "2026-08-21",
+      "entry_price": 759.52,
+      "exit_price": 761.35,
+      "exit_reason": "TIME_EXIT",
+      "qty": 13,
+      "sl": 740.54,
+      "sl_eff": 740.54,
+      "t1": 768.64,
+      "t2": 780.79,
+      "half_booked": false,
+      "gross_pnl_pct": 0.241,
+      "net_pnl_pct": -0.059,
+      "pnl": -0.059,
+      "pnl_net": -0.059,
+      "pnl_pct": -0.059,
+      "holding_candles": 1,
+      "exit_candle_low": 751.7,
+      "exit_candle_high": 766.2,
+      "details": {
+        "daily_range_pct": 5.59,
+        "close_position": 0.227,
+        "rsi": 32.9,
         "volume_spike": true,
         "below_vwap": true,
         "below_sma": true
@@ -218,12 +222,24 @@
       "qty": 14,
       "status": "FILLED",
       "note": "STOP_LOSS close 663.70 low 662.40"
+    },
+    {
+      "order_id": "3200739B29",
+      "ts": "2026-08-21 15:45:11",
+      "ticker": "ASTERDM",
+      "side": "SELL",
+      "type": "MARKET",
+      "price": null,
+      "trigger": null,
+      "qty": 13,
+      "status": "FILLED",
+      "note": "time exit @ 761.35"
     }
   ],
   "daily_pnl": {
-    "2026-08-21": -273.94
+    "2026-08-21": -279.77
   },
-  "total_pnl": -2.801,
+  "total_pnl": -2.86,
   "wins": 0,
-  "losses": 1
+  "losses": 2
 }
