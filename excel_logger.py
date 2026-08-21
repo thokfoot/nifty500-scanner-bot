@@ -5,6 +5,7 @@ Creates/updates a multi-sheet Excel file after each run.
 import os, traceback
 from datetime import datetime
 import pandas as pd
+import openpyxl
 import pytz
 
 IST = pytz.timezone("Asia/Kolkata")
@@ -25,6 +26,10 @@ TRADE_COLS = [
     "Gross_PnL_Pct", "Net_PnL_Pct", "Investment", "PnL_Amount", "Status"
 ]
 ERROR_COLS = ["Date", "Time", "Context", "Error", "Traceback"]
+ORDER_COLS = [
+    "Date", "Time", "Order_ID", "Ticker", "Side", "Type",
+    "Price", "Trigger", "Qty", "Status", "Note"
+]
 PORTFOLIO_COLS = [
     "Date", "Time", "Capital", "Invested", "Available", "Unrealized_PnL",
     "Realized_PnL", "Total_PnL", "Win_Rate", "Total_Trades", "Open_Positions"
@@ -34,19 +39,32 @@ ALL_SHEETS = {
     "Scans": SCAN_COLS,
     "Signals": SIGNAL_COLS,
     "Trades": TRADE_COLS,
+    "Orders": ORDER_COLS,
     "Errors": ERROR_COLS,
     "Portfolio": PORTFOLIO_COLS,
 }
 
 
 def _ensure_excel():
-    """Create Excel with all sheets if it doesn't exist."""
+    """Create Excel with all sheets; add any missing sheets to existing files."""
     os.makedirs(os.path.dirname(EXCEL_FILE), exist_ok=True)
     if not os.path.exists(EXCEL_FILE):
         with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl") as xf:
             for sheet_name, cols in ALL_SHEETS.items():
                 pd.DataFrame(columns=cols).to_excel(xf, sheet_name=sheet_name, index=False)
         print(f"[LOG] Created {EXCEL_FILE}")
+        return
+    # existing file: create any sheet added later (e.g. Orders)
+    try:
+        book = openpyxl.load_workbook(EXCEL_FILE)
+        missing = [s for s in ALL_SHEETS if s not in book.sheetnames]
+        if missing:
+            with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a") as xf:
+                for s in missing:
+                    pd.DataFrame(columns=ALL_SHEETS[s]).to_excel(xf, sheet_name=s, index=False)
+            print(f"[LOG] Added sheets: {missing}")
+    except Exception as e:
+        print(f"[LOG] Sheet ensure error: {e}")
 
 
 def _load_sheet(xf, sheet_name, cols):
@@ -177,6 +195,40 @@ def log_trade(trade, status="CLOSED"):
         print(f"[LOG] Trade log error: {e}")
 
 
+def log_order(order):
+    """Log a broker order event (PLACED/FILLED/CANCELLED/REJECTED)."""
+    now = datetime.now(IST)
+    _ensure_excel()
+
+    row = {
+        "Date": now.strftime("%Y-%m-%d"),
+        "Time": now.strftime("%H:%M:%S"),
+        "Order_ID": order.get("order_id", ""),
+        "Ticker": order.get("ticker", ""),
+        "Side": order.get("side", ""),
+        "Type": order.get("type", ""),
+        "Price": order.get("price", ""),
+        "Trigger": order.get("trigger", ""),
+        "Qty": order.get("qty", ""),
+        "Status": order.get("status", ""),
+        "Note": str(order.get("note", ""))[:200],
+    }
+
+    try:
+        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="overlay") as xf:
+            df = _load_sheet(xf, "Orders", ORDER_COLS)
+            df = _append_row(df, row)
+            df.to_excel(xf, sheet_name="Orders", index=False)
+    except Exception as e:
+        print(f"[LOG] Order log error: {e}")
+
+
+def log_orders(orders):
+    """Log a batch of order events."""
+    for o in orders:
+        log_order(o)
+
+
 def log_error(context, error, tb_str=None):
     """Log an error."""
     now = datetime.now(IST)
@@ -206,7 +258,8 @@ def log_portfolio(portfolio):
     _ensure_excel()
 
     capital = portfolio.get("capital", 0)
-    open_pos = [p for p in portfolio.get("open_positions", []) if p.get("status") == "OPEN"]
+    open_pos = [p for p in portfolio.get("holdings", portfolio.get("open_positions", []))
+                if p.get("status") == "OPEN"]
     invested = sum(p.get("entry_price", 0) * p.get("qty", 0) for p in open_pos)
     available = capital - invested
     realized = portfolio.get("total_pnl", 0)

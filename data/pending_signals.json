@@ -1,63 +1,5 @@
 {
-  "pending": [
-    {
-      "ticker": "HSCL",
-      "signal_date": "2026-08-20",
-      "prev_close": 704.2,
-      "entry_price": 698.57,
-      "sl": 681.1,
-      "t1": 706.95,
-      "t2": 718.13,
-      "details": {
-        "daily_range_pct": 10.37,
-        "close_position": 0.121,
-        "rsi": 36.7,
-        "volume_spike": true,
-        "below_vwap": true,
-        "below_sma": true
-      }
-    },
-    {
-      "ticker": "ASTERDM",
-      "signal_date": "2026-08-20",
-      "prev_close": 765.65,
-      "entry_price": 759.52,
-      "sl": 740.54,
-      "t1": 768.64,
-      "t2": 780.79,
-      "details": {
-        "daily_range_pct": 5.59,
-        "close_position": 0.227,
-        "rsi": 32.9,
-        "volume_spike": true,
-        "below_vwap": true,
-        "below_sma": true
-      }
-    },
-    {
-      "ticker": "PFOCUS",
-      "signal_date": "2026-08-19",
-      "prev_close": 279.2,
-      "entry_price": 276.97,
-      "sl": 270.04,
-      "t1": 280.29,
-      "t2": 284.72,
-      "details": {
-        "daily_range_pct": 4.77,
-        "close_position": 0.205,
-        "volume": 1454122,
-        "vol_ma20": 824828,
-        "volume_spike": "True",
-        "close": 279.2,
-        "vwap": 288.12,
-        "below_vwap": "True",
-        "rsi": 36.2,
-        "rsi_ok": "True",
-        "sma20": 286.31,
-        "below_sma": "True"
-      }
-    }
-  ],
+  "pending": [],
   "executed": [
     {
       "ticker": "3MINDIA",
@@ -90,6 +32,30 @@
       "exit_reason": "no_fill",
       "net_pnl_pct": null,
       "executed_at": "2026-08-21 11:03:37"
+    },
+    {
+      "ticker": "HSCL",
+      "signal_date": "2026-08-20",
+      "trade_date": "2026-08-21",
+      "exit_reason": "OPEN_POSITION",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-21 12:35:18"
+    },
+    {
+      "ticker": "ASTERDM",
+      "signal_date": "2026-08-20",
+      "trade_date": "2026-08-21",
+      "exit_reason": "OPEN_POSITION",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-21 12:35:18"
+    },
+    {
+      "ticker": "PFOCUS",
+      "signal_date": "2026-08-19",
+      "trade_date": "2026-08-20",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-21 12:35:18"
     }
   ]
 }

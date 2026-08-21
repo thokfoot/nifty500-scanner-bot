@@ -1,12 +1,19 @@
 """
-Nifty 500 Volatile Down-Close Paper Trading Bot
-Flow:
-  1. Load portfolio + pending signals (persisted in repo)
-  2. Download daily + 15m data
-  3. Execute due pending signals on their D+1 (limit fill + CLOSE-based exits)
-  4. Safety-net exit check for any open positions
-  5. Scan latest bars for NEW signals -> save as pending (watchlist for next day)
-  6. Save state, log Excel, notify Telegram
+Nifty 500 Volatile Down-Close Bot - PRODUCTION broker-type orchestrator.
+
+Flow (every run):
+  1. Load store (pending_signals.json) + portfolio
+  2. Download daily (1y) + 15m (7d) data with retry
+  3. LIVE_MODE: process today's partial 15m without the 15:15 guard
+  4. Pending signals -> BrokerSimulator (ENTRY LIMIT -> SL-M/T1/T2 working orders)
+     - EXECUTED      : closed trade same run
+     - OPEN_POSITION : filled, stays in holdings, monitored every run
+     - NO_FILL       : limit never touched / gap-up reject
+  5. Monitor open holdings for exits on new candles (SL/T2/BE/TIME)
+  6. Scan new signals after 15:15 IST (or EXECUTE_NOW), last 2 daily bars
+  7. Cleanup expired, save state, Excel (Scans/Signals/Trades/Orders/Portfolio)
+  8. Telegram: individual event messages + 1 summary + Excel document
+
 State is committed back to the repo by the workflow.
 """
 import sys, os, time, traceback
@@ -22,18 +29,36 @@ from config import (
     MAX_WORKERS, INITIAL_CAPITAL, MAX_TRADES_PER_DAY, EXECUTE_AFTER,
 )
 from scanner import is_volatile_down_close
-from portfolio import load_portfolio, check_exits, record_closed_trade, get_portfolio_summary, ist_today
-from executor import execute_signal
+from portfolio import (
+    load_portfolio, save_portfolio, can_take_trade, add_position,
+    find_holding, close_position, record_closed_trade, add_order,
+    get_open_positions, get_portfolio_summary, ist_today, position_size,
+)
+from executor import BrokerSimulator
 from signals_store import load_store, save_store, add_signals, mark_executed, cleanup, find_trade_date
-from notifier import send_msg, send_doc
-from excel_logger import log_scan, log_signals, log_trade, log_error, log_portfolio, get_excel_path, get_excel_exists
+from telegram_notifier import (
+    send_message, send_document,
+    fmt_new_signal, fmt_order_placed, fmt_filled, fmt_no_fill,
+    fmt_t1_hit, fmt_closed_trade, fmt_summary,
+)
+from excel_logger import (
+    log_scan, log_signals, log_trade, log_order, log_error, log_portfolio,
+    get_excel_path, get_excel_exists,
+)
 
 IST = pytz.timezone("Asia/Kolkata")
 LOG_DIR = "logs"
 
+
 def log(msg):
     ts = datetime.now(IST).strftime("%H:%M:%S")
     print(f"[{ts}] {msg}")
+
+
+def _cutoff_today(now):
+    return now.replace(hour=int(EXECUTE_AFTER[:2]), minute=int(EXECUTE_AFTER[3:5]),
+                       second=0, microsecond=0)
+
 
 def get_nifty500_tickers():
     try:
@@ -47,6 +72,7 @@ def get_nifty500_tickers():
     except Exception as e:
         log(f"NSE CSV failed: {e}, using fallback")
         return _fallback_nifty500()
+
 
 def _fallback_nifty500():
     return [
@@ -73,71 +99,76 @@ def _fallback_nifty500():
         "HINDCOPPER","NATIONALUM","MAZAGON",
     ]
 
+
+def _clean_yf(df, min_len):
+    if df is None or df.empty:
+        return None
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+    df.index = pd.to_datetime(df.index)
+    if df.index.tz is not None:
+        df.index = df.index.tz_localize(None)
+    if not all(c in df.columns for c in ["Open", "High", "Low", "Close", "Volume"]):
+        return None
+    df = df[["Open", "High", "Low", "Close", "Volume"]].dropna()
+    return df if len(df) >= min_len else None
+
+
 def download_data(tickers, max_workers=8):
-    daily = {}
-    data_15m = {}
+    """Daily (1y) + 15m (7d) with one retry pass for failures."""
+    daily, data_15m = {}, {}
 
     def _dl_daily(t):
         try:
             df = yf.download(f"{t}.NS", period="1y", interval="1d",
                              auto_adjust=True, progress=False, threads=False)
-            if df is not None and not df.empty:
-                if isinstance(df.columns, pd.MultiIndex):
-                    df.columns = df.columns.get_level_values(0)
-                df.index = pd.to_datetime(df.index)
-                if df.index.tz is not None:
-                    df.index = df.index.tz_localize(None)
-                if len([c for c in ["Open","High","Low","Close","Volume"] if c in df.columns]) == 5:
-                    df = df[["Open","High","Low","Close","Volume"]].dropna()
-                    if len(df) >= 30:
-                        return t, df
-        except:
-            pass
-        return t, None
+            df = _clean_yf(df, 30)
+            return t, df
+        except Exception:
+            return t, None
 
     def _dl_15m(t):
         try:
-            df = yf.download(f"{t}.NS", period="60d", interval="15m",
+            df = yf.download(f"{t}.NS", period="7d", interval="15m",
                              auto_adjust=True, progress=False, threads=False)
-            if df is not None and not df.empty:
-                if isinstance(df.columns, pd.MultiIndex):
-                    df.columns = df.columns.get_level_values(0)
-                df.index = pd.to_datetime(df.index)
-                if df.index.tz is not None:
-                    df.index = df.index.tz_localize(None)
-                if len([c for c in ["Open","High","Low","Close","Volume"] if c in df.columns]) == 5:
-                    df = df[["Open","High","Low","Close","Volume"]].dropna()
-                    if len(df) >= 10:
-                        by_date = {}
-                        for date_val, grp in df.groupby(df.index.date):
-                            by_date[str(date_val)] = grp
-                        return t, by_date
-        except:
-            pass
-        return t, None
+            df = _clean_yf(df, 10)
+            if df is None:
+                return t, None
+            by_date = {}
+            for date_val, grp in df.groupby(df.index.date):
+                by_date[str(date_val)] = grp
+            return t, by_date
+        except Exception:
+            return t, None
+
+    def run_pool(fn, universe, sink, label):
+        pending = list(universe)
+        for attempt in (1, 2):                      # one retry pass
+            if not pending:
+                break
+            if attempt == 2:
+                log(f"{label}: retrying {len(pending)} failed...")
+            done = set()
+            with ThreadPoolExecutor(max_workers=max_workers) as pool:
+                futs = {pool.submit(fn, t): t for t in pending}
+                for fut in as_completed(futs):
+                    t, res = fut.result()
+                    if res is not None:
+                        sink[t] = res
+                        done.add(t)
+            pending = [t for t in pending if t not in done]
 
     log(f"Downloading daily data for {len(tickers)} stocks...")
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        futs = {pool.submit(_dl_daily, t): t for t in tickers}
-        for fut in as_completed(futs):
-            t, df = fut.result()
-            if df is not None:
-                daily[t] = df
-
+    run_pool(_dl_daily, tickers, daily, "Daily")
     log(f"Daily: {len(daily)}/{len(tickers)} ok")
-    log(f"Downloading 15m data...")
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        futs = {pool.submit(_dl_15m, t): t for t in daily.keys()}
-        for fut in as_completed(futs):
-            t, d = fut.result()
-            if d is not None:
-                data_15m[t] = d
 
+    log("Downloading 15m data...")
+    run_pool(_dl_15m, daily.keys(), data_15m, "15m")
     log(f"15m: {len(data_15m)}/{len(daily)} ok")
     return daily, data_15m
 
+
 def build_signal(ticker, df, idx):
-    """Build a full signal dict from daily bar at idx."""
     ok, details = is_volatile_down_close(df, idx, RANGE_PCT, CLOSE_POS_MAX, VOL_MULT)
     if not ok:
         return None
@@ -145,8 +176,8 @@ def build_signal(ticker, df, idx):
     prev_close = float(df.iloc[idx]["Close"])
     entry_price = prev_close * 0.992          # 0.8% below prev close
     sl = entry_price * 0.975                  # 2.5% below entry
-    t1 = entry_price * 1.012                  # 1.2% above entry
-    t2 = entry_price * 1.028                  # 2.8% above entry
+    t1 = entry_price * 1.012                  # +1.2%
+    t2 = entry_price * 1.028                  # +2.8%
     return {
         "ticker": ticker,
         "signal_date": sig_date,
@@ -158,18 +189,12 @@ def build_signal(ticker, df, idx):
         "details": details,
     }
 
-def scan_new_signals(daily):
-    """Scan recent daily bars for fresh signals.
 
-    Only bars from completed sessions qualify. Today's live (partial) bar is
-    accepted only after 15:15 IST (or EXECUTE_NOW=1) so incomplete candles
-    don't create false signals with wrong levels.
-    Older bars are re-checked too - dedupe in signals_store prevents repeats.
-    """
+def scan_new_signals(daily):
+    """Scan last 2 completed daily bars. Today's live bar only after 15:15 IST."""
     now = datetime.now(IST)
     today_str = now.strftime("%Y-%m-%d")
-    cutoff = now.replace(hour=int(EXECUTE_AFTER[:2]), minute=int(EXECUTE_AFTER[3:5]),
-                         second=0, microsecond=0)
+    cutoff = _cutoff_today(now)
     allow_today_bar = now >= cutoff or os.getenv("EXECUTE_NOW") == "1"
 
     found = []
@@ -178,89 +203,158 @@ def scan_new_signals(daily):
             n = len(df)
             if n < 25:
                 continue
-            for idx in (n - 1, n - 2):        # latest bar + previous (Yahoo lag safety)
+            for idx in (n - 1, n - 2):
                 if idx < 20:
                     continue
                 bar_date = df.index[idx].strftime("%Y-%m-%d")
                 if bar_date > today_str:
                     continue
                 if bar_date == today_str and not allow_today_bar:
-                    continue                  # incomplete live bar - wait for close
+                    continue
                 sig = build_signal(ticker, df, idx)
                 if sig:
                     found.append(sig)
-                    break                     # one signal per ticker
+                    break
         except Exception:
             pass
     return found
 
-def process_pending(store, portfolio, data_15m):
-    """Execute pending signals whose D+1 data has arrived."""
+
+def process_pending(store, portfolio, data_15m, live_mode):
+    """Run pending signals through the BrokerSimulator.
+
+    Returns (closed_trades, new_holdings, no_fills, deferred, tg_events, order_events)
+    """
     now = datetime.now(IST)
     today_str = now.strftime("%Y-%m-%d")
-    cutoff = now.replace(hour=int(EXECUTE_AFTER[:2]), minute=int(EXECUTE_AFTER[3:5]), second=0, microsecond=0)
-    force = os.getenv("EXECUTE_NOW") == "1"
+    cutoff = _cutoff_today(now)
 
-    executed_trades, skipped, deferred = [], [], []
+    order_events = []
+    broker = BrokerSimulator(order_sink=lambda o: (add_order(portfolio, o),
+                                                   order_events.append(o)))
+
+    closed_trades, new_holdings, no_fills, deferred, tg_events = [], [], [], [], []
     still_pending = []
-    per_day_count = {}          # enforce MAX_TRADES_PER_DAY per trade date
 
     for sig in store["pending"]:
         try:
-            ticker_dates = data_15m.get(sig["ticker"], {}).keys()
+            ticker = sig["ticker"]
+
+            # Already holding? never re-enter.
+            if find_holding(portfolio, ticker) is not None:
+                mark_executed(store, sig, sig.get("signal_date", ""),
+                              {"exit_reason": "OPEN_POSITION", "net_pnl_pct": None})
+                continue
+
+            ticker_dates = data_15m.get(ticker, {}).keys()
             trade_date = find_trade_date(ticker_dates, sig["signal_date"])
-
             if trade_date is None:
-                still_pending.append(sig)     # D+1 data not available yet
+                still_pending.append(sig)              # D+1 data not there yet
                 continue
 
-            # Wait for full-day data before simulating today's trade
-            if trade_date == today_str and now < cutoff and not force:
+            finalize = (trade_date < today_str) or (now >= cutoff)
+            if trade_date == today_str and not finalize and not live_mode:
                 deferred.append(sig)
                 still_pending.append(sig)
                 continue
 
-            # Max trades per day cap - leftover stays pending, executes next run
-            day_count = per_day_count.get(trade_date, 0)
-            if day_count >= MAX_TRADES_PER_DAY:
+            if not can_take_trade(portfolio, trade_date):
+                deferred.append(sig)                   # MAX_TRADES_PER_DAY hit
                 still_pending.append(sig)
-                deferred.append(sig)
                 continue
 
-            day_df = data_15m[sig["ticker"]][trade_date]
-            outcome = execute_signal(sig, day_df)
+            day_df = data_15m[ticker][trade_date]
+            outcome = broker.execute_signal(sig, day_df, finalize=finalize)
+            status = outcome["status"]
 
-            if outcome["status"] == "EXECUTED":
+            if status == "EXECUTED":
                 trade = outcome["trade"]
-                # Mark executed FIRST so a later failure can never re-execute it
-                mark_executed(store, sig, trade_date, trade)
-                try:
-                    record_closed_trade(portfolio, trade)
-                    executed_trades.append(trade)
-                    per_day_count[trade_date] = day_count + 1
-                except Exception as e:
-                    log(f"  [ERROR] recording {sig['ticker']}: {e}")
+                mark_executed(store, sig, trade_date, trade)       # FIRST - no double exec
+                record_closed_trade(portfolio, trade)
+                closed_trades.append(trade)
+                tg_events.append(fmt_closed_trade(trade))
                 try:
                     log_trade(trade, status="CLOSED")
                 except Exception as e:
                     log(f"[LOG ERROR] trade log failed: {e}")
-            else:
-                info = outcome.get("info", "")
-                skipped.append({"sig": sig, "status": outcome["status"], "info": info})
+                log(f"  EXECUTED {ticker} @ {trade['entry_price']} -> "
+                    f"{trade['exit_reason']} | net {trade['net_pnl_pct']:+.2f}%")
+
+            elif status == "OPEN_POSITION":
+                pos = outcome["position"]
                 mark_executed(store, sig, trade_date,
-                              {"exit_reason": outcome["status"], "net_pnl_pct": None})
+                              {"exit_reason": "OPEN_POSITION", "net_pnl_pct": None})
+                add_position(portfolio, pos)
+                new_holdings.append(pos)
+                qty = position_size(float(sig["entry_price"]))
+                tg_events.append(fmt_order_placed(sig, qty, trade_date))
+                tg_events.append(fmt_filled(pos))
+                log(f"  FILLED {ticker} @ {pos['entry_price']} x{pos['qty']} - position OPEN")
+
+            else:                                       # NO_FILL | BAD_DATA
+                info = outcome.get("info", "")
+                mark_executed(store, sig, trade_date,
+                              {"exit_reason": status.lower(), "net_pnl_pct": None})
+                no_fills.append({"sig": sig, "info": info})
+                if status == "NO_FILL":
+                    try:
+                        day_low = float(day_df["Low"].min())
+                    except Exception:
+                        day_low = 0.0
+                    tg_events.append(fmt_no_fill(ticker, sig["entry_price"], day_low, info))
+                log(f"  SKIPPED {ticker} ({status}) {info}")
+
         except Exception as e:
             log(f"  [ERROR] processing {sig['ticker']}: {e}")
             still_pending.append(sig)
 
     store["pending"] = still_pending
-    return executed_trades, skipped, deferred
+    return closed_trades, new_holdings, no_fills, deferred, tg_events, order_events
 
-def format_signal_line(s):
-    d = s.get("details", {})
-    return (f"  {s['ticker']}\n"
-            f"    Range: {d.get('daily_range_pct','?')}% | CP: {d.get('close_position','?')} | RSI: {d.get('rsi','?')}\n"
-            f"    Entry: Rs {s['entry_price']} | SL: Rs {s['sl']} | T1: Rs {s['t1']} | T2: Rs {s['t2']}")
+
+def monitor_holdings(portfolio, data_15m, live_mode):
+    """Check open holdings for exits on candles newer than last processed."""
+    now = datetime.now(IST)
+    today_str = now.strftime("%Y-%m-%d")
+    cutoff = _cutoff_today(now)
+
+    order_events = []
+    broker = BrokerSimulator(order_sink=lambda o: (add_order(portfolio, o),
+                                                   order_events.append(o)))
+    closed_trades, tg_events = [], []
+
+    for pos in get_open_positions(portfolio):
+        try:
+            ticker = pos["ticker"]
+            day_df = data_15m.get(ticker, {}).get(pos.get("trade_date"))
+            if day_df is None:
+                continue
+
+            finalize = (pos.get("trade_date") < today_str) or (now >= cutoff)
+            if not finalize and not live_mode:
+                continue
+
+            res = broker.check_position(pos, day_df, finalize=finalize)
+
+            if res["t1_hit"]:
+                tg_events.append(fmt_t1_hit(pos))
+                log(f"  T1 HIT {ticker} - 50% booked, SL -> BE")
+
+            if res["closed"] is not None:
+                trade = close_position(portfolio, pos, res["closed"])
+                closed_trades.append(trade)
+                tg_events.append(fmt_closed_trade(trade))
+                try:
+                    log_trade(trade, status="CLOSED")
+                except Exception as e:
+                    log(f"[LOG ERROR] trade log failed: {e}")
+                log(f"  CLOSED {ticker}: {trade['exit_reason']} @ {trade['exit_price']} "
+                    f"| net {trade['net_pnl_pct']:+.2f}%")
+        except Exception as e:
+            log(f"  [ERROR] monitoring {pos.get('ticker')}: {e}")
+
+    return closed_trades, tg_events, order_events
+
 
 def main():
     start_time = time.time()
@@ -269,159 +363,121 @@ def main():
     time_str = now.strftime("%H:%M IST")
     error_count = 0
 
-    log(f"Starting Nifty 500 Volatile Down-Close Bot - {date_str} {time_str}")
+    live_mode = os.getenv("LIVE_MODE") == "1" or os.getenv("EXECUTE_NOW") == "1"
+    mode_tag = "LIVE" if live_mode else "SAFE"
+
+    log(f"Starting Nifty 500 Bot [{mode_tag}] - {date_str} {time_str}")
+
+    tg_events = []          # individual event messages
+    all_order_events = []
+    executed_count = 0
 
     try:
         # ── 1. Load state ──
         portfolio = load_portfolio()
         store = load_store()
-        log(f"Portfolio: Rs {portfolio.get('capital', INITIAL_CAPITAL):,.0f} | "
-            f"Pending signals: {len(store['pending'])}")
+        log(f"Capital Rs {portfolio['capital']:,.0f} | Pending {len(store['pending'])} "
+            f"| Holdings {len(get_open_positions(portfolio))}")
 
-        # ── 2. Get tickers ──
+        # ── 2. Data ──
         tickers = get_nifty500_tickers()
-
-        # ── 3. Download data ──
         daily, data_15m = download_data(tickers, MAX_WORKERS)
 
-        # ── 4. Execute due pending signals ──
-        executed, skipped, deferred = process_pending(store, portfolio, data_15m)
-        for t in executed:
-            log(f"  EXECUTED {t['ticker']} @ Rs {t['entry_price']} -> {t['exit_reason']} "
-                f"| Net P&L {t['net_pnl_pct']:+.2f}%")
-        for s in skipped:
-            log(f"  SKIPPED {s['sig']['ticker']} ({s['status']}) {s['info']}")
-        if deferred:
-            log(f"  DEFERRED {len(deferred)} signal(s) - waiting for full-day data")
+        # ── 3+4. Pending signals through broker ──
+        closed_a, holdings_new, no_fills, deferred, ev, oe = process_pending(
+            store, portfolio, data_15m, live_mode)
+        tg_events.extend(ev)
+        all_order_events.extend(oe)
+        executed_count = len(closed_a) + len(holdings_new)
 
-        # ── 5. Safety-net exit check for legacy open positions ──
-        closed = []
-        open_positions = [p for p in portfolio.get("open_positions", []) if p["status"] == "OPEN"]
-        if open_positions:
-            log(f"Checking exits for {len(open_positions)} open position(s)...")
-            closed = check_exits(portfolio, data_15m)
-            for t in closed:
-                log(f"  CLOSED {t['ticker']}: {t['exit_reason']} P&L {t['pnl']:+.2f}%")
-                try:
-                    log_trade(t, status="CLOSED")
-                except Exception as e:
-                    log(f"  [LOG ERROR] trade log failed: {e}")
-                    error_count += 1
+        # ── 5. Monitor open holdings ──
+        closed_b, ev, oe = monitor_holdings(portfolio, data_15m, live_mode)
+        tg_events.extend(ev)
+        all_order_events.extend(oe)
+        closed_total = closed_a + closed_b
 
-        # ── 6. Scan for NEW signals ──
-        new_signals = scan_new_signals(daily)
-        added = add_signals(store, new_signals)
-        if added:
+        # ── 6. New signals (after close only) ──
+        added = []
+        if now >= _cutoff_today(now) or os.getenv("EXECUTE_NOW") == "1":
+            new_signals = scan_new_signals(daily)
+            added = add_signals(store, new_signals)
             for s in added:
-                log(f"  NEW SIGNAL {s['ticker']} (signal date {s['signal_date']}) -> watchlist")
+                tg_events.append(fmt_new_signal(s))
+                log(f"  NEW SIGNAL {s['ticker']} ({s['signal_date']}) -> watchlist")
+        else:
+            log("Signal scan skipped (market still open)")
 
-        # ── 7. Expire stale pendings & persist state ──
+        # ── 7. Cleanup + persist ──
         expired = cleanup(store)
         if expired:
             log(f"  EXPIRED {len(expired)} stale signal(s)")
         save_store(store)
+        save_portfolio(portfolio)
 
-        # ── 8. Log everything to Excel ──
+        # ── 8. Excel logging ──
         duration = time.time() - start_time
         try:
             log_scan(
-                stocks_scanned=len(tickers),
-                daily_ok=len(daily),
-                intraday_ok=len(data_15m),
-                signals_found=len(new_signals),
-                tradeable=len(executed),
-                watchlist=len(added),
-                entered=len(executed),
-                closed=len(closed),
-                errors=error_count,
-                duration=duration,
+                stocks_scanned=len(tickers), daily_ok=len(daily),
+                intraday_ok=len(data_15m), signals_found=len(added),
+                tradeable=executed_count, watchlist=len(added),
+                entered=executed_count, closed=len(closed_total),
+                errors=error_count, duration=duration,
             )
         except Exception as e:
             log(f"[LOG ERROR] scan log failed: {e}")
-            error_count += 1
 
         try:
             if added:
                 log_signals(added, signal_type="WATCHLIST")
-            if executed:
-                log_signals([{"ticker": t["ticker"], "signal_date": t["signal_date"],
-                              "prev_close": "", "entry_price": t["entry_price"], "sl": t["sl"],
-                              "t1": t["t1"], "t2": t["t2"], "details": t.get("details", {})}
-                             for t in executed], signal_type="EXECUTED")
         except Exception as e:
             log(f"[LOG ERROR] signal log failed: {e}")
-            error_count += 1
+
+        for o in all_order_events:
+            try:
+                log_order(o)
+            except Exception:
+                pass
 
         try:
-            log_portfolio(load_portfolio())
+            log_portfolio(portfolio)
         except Exception as e:
             log(f"[LOG ERROR] portfolio log failed: {e}")
-            error_count += 1
 
-        # ── 9. Build Telegram message ──
-        lines = []
-        lines.append(f"{'='*40}")
-        lines.append(f"  NIFTY 500 VOLATILE DOWN-CLOSE BOT")
-        lines.append(f"  {date_str} {time_str}")
-        lines.append(f"{'='*40}")
-        lines.append("")
-        lines.append(f"Scan: {len(daily)}/{len(tickers)} stocks | "
-                     f"{len(executed)} executed | {len(added)} new signals | {error_count} errors")
+        # ── 9. Telegram: events then summary then Excel ──
+        log(f"Sending {len(tg_events)} TG event message(s)...")
+        for msg in tg_events:
+            send_message(msg)
 
-        if executed:
-            lines.append("")
-            lines.append(f"TRADES EXECUTED ({len(executed)}):")
-            for t in executed:
-                emoji = "+" if t["net_pnl_pct"] > 0 else ""
-                lines.append(f"  {emoji}{t['ticker']} @ Rs {t['entry_price']} x{t['qty']}")
-                lines.append(f"    Exit: {t['exit_reason']} @ Rs {t['exit_price']} | Net P&L: {t['net_pnl_pct']:+.2f}%")
+        wins = portfolio.get("wins", 0)
+        losses = portfolio.get("losses", 0)
+        wr = round(wins / (wins + losses) * 100, 1) if (wins + losses) else 0.0
+        pnl_today = portfolio.get("daily_pnl", {}).get(date_str, 0.0)
+        summary = fmt_summary(
+            date_str=f"{date_str} {time_str} [{mode_tag}]",
+            scanned=len(daily),
+            signals_found=len(added),
+            executed=executed_count,
+            closed=len(closed_total),
+            pnl_rs=pnl_today,
+            win_rate=wr,
+            pending=[s["ticker"] for s in store["pending"]],
+            holdings=get_open_positions(portfolio),
+        )
+        summary += "\n\n" + get_portfolio_summary(portfolio)
+        send_message(summary)
 
-        if skipped:
-            lines.append("")
-            lines.append(f"SKIPPED ({len(skipped)}):")
-            for s in skipped:
-                lines.append(f"  {s['sig']['ticker']} - {s['status']} {s['info']}")
-
-        if added:
-            lines.append("")
-            lines.append(f"NEW WATCHLIST ({len(added)}) - for next trading day:")
-            for s in added:
-                lines.append(format_signal_line(s))
-
-        if deferred:
-            lines.append("")
-            lines.append(f"PENDING ({len(deferred)}) - will execute after {EXECUTE_AFTER} IST:")
-            for s in deferred:
-                lines.append(f"  {s['ticker']} | Entry Rs {s['entry_price']} | SL Rs {s['sl']} | T1 Rs {s['t1']} | T2 Rs {s['t2']}")
-
-        if closed:
-            lines.append("")
-            lines.append(f"CLOSED OPEN POSITIONS ({len(closed)}):")
-            for t in closed:
-                emoji = "+" if t["pnl"] > 0 else "-"
-                lines.append(f"  {emoji} {t['ticker']} {t['exit_reason']} | P&L {t['pnl']:+.2f}%")
-
-        lines.append("")
-        lines.append(get_portfolio_summary(load_portfolio()))
-
-        # ── 10. Send to Telegram ──
-        msg = "\n".join(lines)
-        if len(msg) > 4000:
-            msg = msg[:4000]
-
-        log("Sending to Telegram...")
-        send_msg(msg)
-
-        # ── 11. Send Excel file ──
         if get_excel_exists():
-            log("Sending Excel log...")
-            send_doc(get_excel_path(), caption=f"Trade Log - {date_str}")
+            send_document(get_excel_path(), caption=f"Trade Log {date_str} {time_str}")
 
-        # ── 12. Save text log ──
+        # ── 10. Text log (append; multiple runs/day) ──
         os.makedirs(LOG_DIR, exist_ok=True)
         log_path = os.path.join(LOG_DIR, f"scan_{date_str}.txt")
-        with open(log_path, "w", encoding="utf-8") as f:
-            f.write(msg)
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(f"\n{'='*50}\nRUN {date_str} {time_str} [{mode_tag}]\n{'='*50}\n")
+            f.write(summary + "\n")
+            for m in tg_events:
+                f.write(m.replace("*", "").replace("`", "") + "\n")
         log(f"Log saved: {log_path}")
 
     except Exception as e:
@@ -430,14 +486,15 @@ def main():
         log(tb)
         try:
             log_error("MAIN", e, tb)
-        except:
+        except Exception:
             pass
         try:
-            send_msg(f"BOT ERROR\n{date_str} {time_str}\n{str(e)[:500]}")
-        except:
+            send_message(f"🚨 *BOT ERROR* {date_str} {time_str}\n`{str(e)[:400]}`")
+        except Exception:
             pass
 
     log("Done!")
+
 
 if __name__ == "__main__":
     main()
