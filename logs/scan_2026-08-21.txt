@@ -141,3 +141,36 @@ OPEN POSITIONS:
 Entry 249.24 | SL 243.01
 T1 252.23 | T2 256.22
 RSI 34.7 | Range 3.83% | CP 0.188
+
+==================================================
+RUN 2026-08-21 15:13 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-08-21 15:13 IST [LIVE]_
+Scanned: 500 | Signals: 2
+Executed: 0 | Closed: 1
+P&L today: Rs *-274* | WinRate: 0.0%
+🟢 Open: ASTERDM@759.52
+📋 Pending: CROMPTON, CCL, HSCL
+
+PORTFOLIO SUMMARY
+Capital: Rs 199,726 (-0.14%)
+Total P&L: Rs -3
+Win/Loss: 0W / 1L (0.0% WR)
+Open Positions: 1
+
+OPEN POSITIONS:
+  ASTERDM @ Rs 759.52 x13 | SL 740.54 T1 768.64 T2 780.79
+
+RECENT CLOSED:
+  HSCL STOP_LOSS | -2.80% net
+🛑 STOP_LOSS: HSCL
+SL 681.1 hit | Low 662.4
+Loss -2.80% net (Rs -274)
+🔍 NEW SIGNAL: CCL
+Entry 1073.44 | SL 1046.61
+T1 1086.32 | T2 1103.5
+RSI 26.3 | Range 3.74% | CP 0.094
+🔍 NEW SIGNAL: HSCL
+Entry 650.01 | SL 633.76
+T1 657.81 | T2 668.21
+RSI 28.7 | Range 9.15% | CP 0.065

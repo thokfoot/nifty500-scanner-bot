@@ -1,33 +1,7 @@
 {
-  "capital": 200000.0,
+  "capital": 199726.06,
   "initial_capital": 200000.0,
   "holdings": [
-    {
-      "ticker": "HSCL",
-      "signal_date": "2026-08-20",
-      "trade_date": "2026-08-21",
-      "entry_price": 698.57,
-      "qty": 14,
-      "sl": 681.1,
-      "sl_eff": 681.1,
-      "t1": 706.95,
-      "t2": 718.13,
-      "half_booked": false,
-      "pnl_banked_pct": 0.0,
-      "entry_ts": "2026-08-21 09:15:00",
-      "last_candle_ts": "2026-08-21 14:15:00",
-      "day_low": 680.5499877929688,
-      "day_high": 710.8499755859375,
-      "status": "OPEN",
-      "details": {
-        "daily_range_pct": 10.37,
-        "close_position": 0.121,
-        "rsi": 36.7,
-        "volume_spike": true,
-        "below_vwap": true,
-        "below_sma": true
-      }
-    },
     {
       "ticker": "ASTERDM",
       "signal_date": "2026-08-20",
@@ -41,7 +15,7 @@
       "half_booked": false,
       "pnl_banked_pct": 0.0,
       "entry_ts": "2026-08-21 09:15:00",
-      "last_candle_ts": "2026-08-21 14:15:00",
+      "last_candle_ts": "2026-08-21 15:00:00",
       "day_low": 751.7000122070312,
       "day_high": 766.2000122070312,
       "status": "OPEN",
@@ -55,7 +29,39 @@
       }
     }
   ],
-  "closed_trades": [],
+  "closed_trades": [
+    {
+      "ticker": "HSCL",
+      "signal_date": "2026-08-20",
+      "entry_date": "2026-08-21",
+      "exit_date": "2026-08-21",
+      "entry_price": 698.57,
+      "exit_price": 681.1,
+      "exit_reason": "STOP_LOSS",
+      "qty": 14,
+      "sl": 681.1,
+      "sl_eff": 681.1,
+      "t1": 706.95,
+      "t2": 718.13,
+      "half_booked": false,
+      "gross_pnl_pct": -2.501,
+      "net_pnl_pct": -2.801,
+      "pnl": -2.801,
+      "pnl_net": -2.801,
+      "pnl_pct": -2.801,
+      "holding_candles": 1,
+      "exit_candle_low": 662.4,
+      "exit_candle_high": 676.0,
+      "details": {
+        "daily_range_pct": 10.37,
+        "close_position": 0.121,
+        "rsi": 36.7,
+        "volume_spike": true,
+        "below_vwap": true,
+        "below_sma": true
+      }
+    }
+  ],
   "orders": [
     {
       "order_id": "47BA4CE1D8",
@@ -200,10 +206,24 @@
       "qty": 36,
       "status": "CANCELLED",
       "note": "DAY expired unfilled"
+    },
+    {
+      "order_id": "104B9E10B8",
+      "ts": "2026-08-21 15:14:03",
+      "ticker": "HSCL",
+      "side": "SELL",
+      "type": "SL-M",
+      "price": null,
+      "trigger": 681.1,
+      "qty": 14,
+      "status": "FILLED",
+      "note": "STOP_LOSS close 663.70 low 662.40"
     }
   ],
-  "daily_pnl": {},
-  "total_pnl": 0.0,
+  "daily_pnl": {
+    "2026-08-21": -273.94
+  },
+  "total_pnl": -2.801,
   "wins": 0,
-  "losses": 0
+  "losses": 1
 }

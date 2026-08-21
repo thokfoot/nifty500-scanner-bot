@@ -22,6 +22,52 @@
         "sma20": 253.7,
         "below_sma": "True"
       }
+    },
+    {
+      "ticker": "CCL",
+      "signal_date": "2026-08-21",
+      "prev_close": 1082.1,
+      "entry_price": 1073.44,
+      "sl": 1046.61,
+      "t1": 1086.32,
+      "t2": 1103.5,
+      "details": {
+        "daily_range_pct": 3.74,
+        "close_position": 0.094,
+        "volume": 321145,
+        "vol_ma20": 175607,
+        "volume_spike": "True",
+        "close": 1082.1,
+        "vwap": 1148.54,
+        "below_vwap": "True",
+        "rsi": 26.3,
+        "rsi_ok": "True",
+        "sma20": 1140.24,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "HSCL",
+      "signal_date": "2026-08-21",
+      "prev_close": 655.25,
+      "entry_price": 650.01,
+      "sl": 633.76,
+      "t1": 657.81,
+      "t2": 668.21,
+      "details": {
+        "daily_range_pct": 9.15,
+        "close_position": 0.065,
+        "volume": 14969913,
+        "vol_ma20": 6674712,
+        "volume_spike": "True",
+        "close": 655.25,
+        "vwap": 746.39,
+        "below_vwap": "True",
+        "rsi": 28.7,
+        "rsi_ok": "True",
+        "sma20": 755.71,
+        "below_sma": "True"
+      }
     }
   ],
   "executed": [
