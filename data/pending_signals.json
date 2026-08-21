@@ -35,73 +35,61 @@
       }
     },
     {
+      "ticker": "PFOCUS",
+      "signal_date": "2026-08-19",
+      "prev_close": 279.2,
+      "entry_price": 276.97,
+      "sl": 270.04,
+      "t1": 280.29,
+      "t2": 284.72,
+      "details": {
+        "daily_range_pct": 4.77,
+        "close_position": 0.205,
+        "volume": 1454122,
+        "vol_ma20": 824828,
+        "volume_spike": "True",
+        "close": 279.2,
+        "vwap": 288.12,
+        "below_vwap": "True",
+        "rsi": 36.2,
+        "rsi_ok": "True",
+        "sma20": 286.31,
+        "below_sma": "True"
+      }
+    }
+  ],
+  "executed": [
+    {
       "ticker": "3MINDIA",
       "signal_date": "2026-08-19",
-      "prev_close": 33505.0,
-      "entry_price": 33236.96,
-      "sl": 32406.04,
-      "t1": 33635.8,
-      "t2": 34167.59,
-      "details": {
-        "daily_range_pct": 5.23,
-        "close_position": 0.086,
-        "rsi": 37.4,
-        "volume_spike": true,
-        "below_vwap": true,
-        "below_sma": true
-      }
+      "trade_date": "2026-08-20",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-21 11:03:37"
     },
     {
       "ticker": "ADANIENSOL",
       "signal_date": "2026-08-19",
-      "prev_close": 1540.7,
-      "entry_price": 1528.37,
-      "sl": 1490.16,
-      "t1": 1546.71,
-      "t2": 1571.17,
-      "details": {
-        "daily_range_pct": 4.45,
-        "close_position": 0.061,
-        "rsi": 25.3,
-        "volume_spike": true,
-        "below_vwap": true,
-        "below_sma": true
-      }
+      "trade_date": "2026-08-20",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-21 11:03:37"
     },
     {
       "ticker": "JSWCEMENT",
       "signal_date": "2026-08-19",
-      "prev_close": 123.66,
-      "entry_price": 122.67,
-      "sl": 119.6,
-      "t1": 124.14,
-      "t2": 126.11,
-      "details": {
-        "daily_range_pct": 3.95,
-        "close_position": 0.148,
-        "rsi": 27.7,
-        "volume_spike": true,
-        "below_vwap": true,
-        "below_sma": true
-      }
+      "trade_date": "2026-08-20",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-21 11:03:37"
     },
     {
       "ticker": "SOBHA",
       "signal_date": "2026-08-19",
-      "prev_close": 1274.1,
-      "entry_price": 1263.91,
-      "sl": 1232.31,
-      "t1": 1279.07,
-      "t2": 1299.3,
-      "details": {
-        "daily_range_pct": 4.09,
-        "close_position": 0.118,
-        "rsi": 30.7,
-        "volume_spike": true,
-        "below_vwap": true,
-        "below_sma": true
-      }
+      "trade_date": "2026-08-20",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-21 11:03:37"
     }
-  ],
-  "executed": []
+  ]
 }

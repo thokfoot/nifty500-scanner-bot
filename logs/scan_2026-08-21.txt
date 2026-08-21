@@ -1,0 +1,27 @@
+========================================
+  NIFTY 500 VOLATILE DOWN-CLOSE BOT
+  2026-08-21 11:02 IST
+========================================
+
+Scan: 500/500 stocks | 0 executed | 1 new signals | 0 errors
+
+SKIPPED (4):
+  3MINDIA - no_fill 
+  ADANIENSOL - no_fill 
+  JSWCEMENT - no_fill 
+  SOBHA - no_fill 
+
+NEW WATCHLIST (1) - for next trading day:
+  PFOCUS
+    Range: 4.77% | CP: 0.205 | RSI: 36.2
+    Entry: Rs 276.97 | SL: Rs 270.04 | T1: Rs 280.29 | T2: Rs 284.72
+
+PENDING (2) - will execute after 15:15 IST:
+  HSCL | Entry Rs 698.57 | SL Rs 681.1 | T1 Rs 706.95 | T2 Rs 718.13
+  ASTERDM | Entry Rs 759.52 | SL Rs 740.54 | T1 Rs 768.64 | T2 Rs 780.79
+
+PORTFOLIO SUMMARY
+Capital: Rs 200,000 (+0.00%)
+Total P&L: Rs +0
+Win/Loss: 0W / 0L (0% WR)
+Open Positions: 0
