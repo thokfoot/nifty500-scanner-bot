@@ -203,6 +203,7 @@ def process_pending(store, portfolio, data_15m):
 
     executed_trades, skipped, deferred = [], [], []
     still_pending = []
+    per_day_count = {}          # enforce MAX_TRADES_PER_DAY per trade date
 
     for sig in store["pending"]:
         try:
@@ -219,14 +220,26 @@ def process_pending(store, portfolio, data_15m):
                 still_pending.append(sig)
                 continue
 
+            # Max trades per day cap - leftover stays pending, executes next run
+            day_count = per_day_count.get(trade_date, 0)
+            if day_count >= MAX_TRADES_PER_DAY:
+                still_pending.append(sig)
+                deferred.append(sig)
+                continue
+
             day_df = data_15m[sig["ticker"]][trade_date]
             outcome = execute_signal(sig, day_df)
 
             if outcome["status"] == "EXECUTED":
                 trade = outcome["trade"]
-                record_closed_trade(portfolio, trade)
-                executed_trades.append(trade)
+                # Mark executed FIRST so a later failure can never re-execute it
                 mark_executed(store, sig, trade_date, trade)
+                try:
+                    record_closed_trade(portfolio, trade)
+                    executed_trades.append(trade)
+                    per_day_count[trade_date] = day_count + 1
+                except Exception as e:
+                    log(f"  [ERROR] recording {sig['ticker']}: {e}")
                 try:
                     log_trade(trade, status="CLOSED")
                 except Exception as e:
