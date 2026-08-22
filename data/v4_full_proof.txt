@@ -1,0 +1,5 @@
+V4 proof is generated from completed OHLCV candles.
+{
+  "stage1": 5760,
+  "stage2": 1500
+}

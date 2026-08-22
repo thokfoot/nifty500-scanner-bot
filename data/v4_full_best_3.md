@@ -1,0 +1,5 @@
+# V4 FULL STRATEGY
+
+1. `{"lookback": 3, "threshold": -0.004, "cvd_rel": 0.5, "sl": 0.015, "t1": 0.01, "t2": 0.017, "book": 0.33, "be": 0.0, "time_exit": 8, "reversal": 0.0, "confirmation": 1}`: {'trades': 1, 'expectancy': -0.08377923811470342, 'pf': 0.0, 'max_dd': 0.08377923811470342, 'score': -0.0837785362245099, 'worst_day': -0.08377923811470342, 'max_consec_loss': 1}
+1. `{"lookback": 3, "threshold": -0.004, "cvd_rel": 0.5, "sl": 0.015, "t1": 0.004, "t2": 0.02, "book": 0.67, "be": 0.003, "time_exit": 8, "reversal": 0.0, "confirmation": 2}`: {'trades': 1, 'expectancy': -0.08377923811470342, 'pf': 0.0, 'max_dd': 0.08377923811470342, 'score': -0.0837785362245099, 'worst_day': -0.08377923811470342, 'max_consec_loss': 1}
+1. `{"lookback": 8, "threshold": -0.004, "cvd_rel": 0.5, "sl": 0.006, "t1": 0.01, "t2": 0.02, "book": 0.5, "be": 0.001, "time_exit": 8, "reversal": -1.0, "confirmation": 3}`: {'trades': 1, 'expectancy': -0.08377923811470342, 'pf': 0.0, 'max_dd': 0.08377923811470342, 'score': -0.0837785362245099, 'worst_day': -0.08377923811470342, 'max_consec_loss': 1}
