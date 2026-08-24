@@ -93,3 +93,30 @@ Open Positions: 0
 RECENT CLOSED:
   HSCL STOP_LOSS | -2.80% net
   ASTERDM TIME_EXIT | -0.06% net
+
+==================================================
+RUN 2026-08-24 14:36 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-08-24 14:36 IST [LIVE]_
+Scanned: 500 | Signals: 2
+Executed: 0 | Closed: 0
+P&L today: Rs *+0* | WinRate: 0.0%
+📋 Pending: COROMANDEL, CREDITACC
+
+PORTFOLIO SUMMARY
+Capital: Rs 199,720 (-0.14%)
+Total P&L: Rs -3
+Win/Loss: 0W / 2L (0.0% WR)
+Open Positions: 0
+
+RECENT CLOSED:
+  HSCL STOP_LOSS | -2.80% net
+  ASTERDM TIME_EXIT | -0.06% net
+🔍 NEW SIGNAL: COROMANDEL
+Entry 1914.36 | SL 1866.5
+T1 1937.33 | T2 1967.96
+RSI 18.3 | Range 4.34% | CP 0.044
+🔍 NEW SIGNAL: CREDITACC
+Entry 1432.15 | SL 1396.35
+T1 1449.34 | T2 1472.25
+RSI 26.3 | Range 4.81% | CP 0.212

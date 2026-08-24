@@ -1,5 +1,52 @@
 {
-  "pending": [],
+  "pending": [
+    {
+      "ticker": "COROMANDEL",
+      "signal_date": "2026-08-24",
+      "prev_close": 1929.8,
+      "entry_price": 1914.36,
+      "sl": 1866.5,
+      "t1": 1937.33,
+      "t2": 1967.96,
+      "details": {
+        "daily_range_pct": 4.34,
+        "close_position": 0.044,
+        "volume": 153139,
+        "vol_ma20": 101187,
+        "volume_spike": "True",
+        "close": 1929.8,
+        "vwap": 2062.09,
+        "below_vwap": "True",
+        "rsi": 18.3,
+        "rsi_ok": "True",
+        "sma20": 2061.61,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "CREDITACC",
+      "signal_date": "2026-08-24",
+      "prev_close": 1443.7,
+      "entry_price": 1432.15,
+      "sl": 1396.35,
+      "t1": 1449.34,
+      "t2": 1472.25,
+      "details": {
+        "daily_range_pct": 4.81,
+        "close_position": 0.212,
+        "volume": 384558,
+        "vol_ma20": 250587,
+        "volume_spike": "True",
+        "close": 1443.7,
+        "vwap": 1550.15,
+        "below_vwap": "True",
+        "rsi": 26.3,
+        "rsi_ok": "True",
+        "sma20": 1542.63,
+        "below_sma": "True"
+      }
+    }
+  ],
   "executed": [
     {
       "ticker": "3MINDIA",
