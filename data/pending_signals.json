@@ -1,75 +1,5 @@
 {
-  "pending": [
-    {
-      "ticker": "CROMPTON",
-      "signal_date": "2026-08-21",
-      "prev_close": 251.25,
-      "entry_price": 249.24,
-      "sl": 243.01,
-      "t1": 252.23,
-      "t2": 256.22,
-      "details": {
-        "daily_range_pct": 3.83,
-        "close_position": 0.188,
-        "volume": 10905541,
-        "vol_ma20": 3783265,
-        "volume_spike": "True",
-        "close": 251.25,
-        "vwap": 254.77,
-        "below_vwap": "True",
-        "rsi": 34.7,
-        "rsi_ok": "True",
-        "sma20": 253.7,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "CCL",
-      "signal_date": "2026-08-21",
-      "prev_close": 1082.1,
-      "entry_price": 1073.44,
-      "sl": 1046.61,
-      "t1": 1086.32,
-      "t2": 1103.5,
-      "details": {
-        "daily_range_pct": 3.74,
-        "close_position": 0.094,
-        "volume": 321145,
-        "vol_ma20": 175607,
-        "volume_spike": "True",
-        "close": 1082.1,
-        "vwap": 1148.54,
-        "below_vwap": "True",
-        "rsi": 26.3,
-        "rsi_ok": "True",
-        "sma20": 1140.24,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "HSCL",
-      "signal_date": "2026-08-21",
-      "prev_close": 655.25,
-      "entry_price": 650.01,
-      "sl": 633.76,
-      "t1": 657.81,
-      "t2": 668.21,
-      "details": {
-        "daily_range_pct": 9.15,
-        "close_position": 0.065,
-        "volume": 14969913,
-        "vol_ma20": 6674712,
-        "volume_spike": "True",
-        "close": 655.25,
-        "vwap": 746.39,
-        "below_vwap": "True",
-        "rsi": 28.7,
-        "rsi_ok": "True",
-        "sma20": 755.71,
-        "below_sma": "True"
-      }
-    }
-  ],
+  "pending": [],
   "executed": [
     {
       "ticker": "3MINDIA",
@@ -126,6 +56,30 @@
       "exit_reason": "no_fill",
       "net_pnl_pct": null,
       "executed_at": "2026-08-21 12:35:18"
+    },
+    {
+      "ticker": "CROMPTON",
+      "signal_date": "2026-08-21",
+      "trade_date": "2026-08-24",
+      "exit_reason": "bad_data",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-24 09:30:07"
+    },
+    {
+      "ticker": "CCL",
+      "signal_date": "2026-08-21",
+      "trade_date": "2026-08-24",
+      "exit_reason": "bad_data",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-24 09:30:07"
+    },
+    {
+      "ticker": "HSCL",
+      "signal_date": "2026-08-21",
+      "trade_date": "2026-08-24",
+      "exit_reason": "bad_data",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-24 09:30:07"
     }
   ]
 }
