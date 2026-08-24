@@ -45,6 +45,52 @@
         "sma20": 1542.63,
         "below_sma": "True"
       }
+    },
+    {
+      "ticker": "GODREJIND",
+      "signal_date": "2026-08-24",
+      "prev_close": 1184.5,
+      "entry_price": 1175.02,
+      "sl": 1145.65,
+      "t1": 1189.12,
+      "t2": 1207.92,
+      "details": {
+        "daily_range_pct": 6.22,
+        "close_position": 0.105,
+        "volume": 195293,
+        "vol_ma20": 118426,
+        "volume_spike": "True",
+        "close": 1184.5,
+        "vwap": 1262.75,
+        "below_vwap": "True",
+        "rsi": 24.1,
+        "rsi_ok": "True",
+        "sma20": 1272.31,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "HSCL",
+      "signal_date": "2026-08-24",
+      "prev_close": 662.2,
+      "entry_price": 656.9,
+      "sl": 640.48,
+      "t1": 664.79,
+      "t2": 675.3,
+      "details": {
+        "daily_range_pct": 4.21,
+        "close_position": 0.184,
+        "volume": 11630958,
+        "vol_ma20": 7015472,
+        "volume_spike": "True",
+        "close": 662.2,
+        "vwap": 736.64,
+        "below_vwap": "True",
+        "rsi": 30.7,
+        "rsi_ok": "True",
+        "sma20": 749.25,
+        "below_sma": "True"
+      }
     }
   ],
   "executed": [

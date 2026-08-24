@@ -120,3 +120,30 @@ RSI 18.3 | Range 4.34% | CP 0.044
 Entry 1432.15 | SL 1396.35
 T1 1449.34 | T2 1472.25
 RSI 26.3 | Range 4.81% | CP 0.212
+
+==================================================
+RUN 2026-08-24 15:36 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-08-24 15:36 IST [LIVE]_
+Scanned: 500 | Signals: 2
+Executed: 0 | Closed: 0
+P&L today: Rs *+0* | WinRate: 0.0%
+📋 Pending: COROMANDEL, CREDITACC, GODREJIND, HSCL
+
+PORTFOLIO SUMMARY
+Capital: Rs 199,720 (-0.14%)
+Total P&L: Rs -3
+Win/Loss: 0W / 2L (0.0% WR)
+Open Positions: 0
+
+RECENT CLOSED:
+  HSCL STOP_LOSS | -2.80% net
+  ASTERDM TIME_EXIT | -0.06% net
+🔍 NEW SIGNAL: GODREJIND
+Entry 1175.02 | SL 1145.65
+T1 1189.12 | T2 1207.92
+RSI 24.1 | Range 6.22% | CP 0.105
+🔍 NEW SIGNAL: HSCL
+Entry 656.9 | SL 640.48
+T1 664.79 | T2 675.3
+RSI 30.7 | Range 4.21% | CP 0.184
