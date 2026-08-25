@@ -1,5 +1,29 @@
 {
-  "pending": [],
+  "pending": [
+    {
+      "ticker": "CHAMBLFERT",
+      "signal_date": "2026-08-25",
+      "prev_close": 430.35,
+      "entry_price": 426.91,
+      "sl": 416.23,
+      "t1": 432.03,
+      "t2": 438.86,
+      "details": {
+        "daily_range_pct": 4.14,
+        "close_position": 0.068,
+        "volume": 1669578,
+        "vol_ma20": 491121,
+        "volume_spike": "True",
+        "close": 430.35,
+        "vwap": 441.44,
+        "below_vwap": "True",
+        "rsi": 22.4,
+        "rsi_ok": "True",
+        "sma20": 441.07,
+        "below_sma": "True"
+      }
+    }
+  ],
   "executed": [
     {
       "ticker": "3MINDIA",
