@@ -22,6 +22,29 @@
         "sma20": 441.07,
         "below_sma": "True"
       }
+    },
+    {
+      "ticker": "RAMCOCEM",
+      "signal_date": "2026-08-25",
+      "prev_close": 904.75,
+      "entry_price": 897.51,
+      "sl": 875.07,
+      "t1": 908.28,
+      "t2": 922.64,
+      "details": {
+        "daily_range_pct": 4.11,
+        "close_position": 0.074,
+        "volume": 529772,
+        "vol_ma20": 297463,
+        "volume_spike": "True",
+        "close": 904.75,
+        "vwap": 926.43,
+        "below_vwap": "True",
+        "rsi": 37.9,
+        "rsi_ok": "True",
+        "sma20": 919.24,
+        "below_sma": "True"
+      }
     }
   ],
   "executed": [
