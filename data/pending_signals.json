@@ -1,98 +1,5 @@
 {
-  "pending": [
-    {
-      "ticker": "COROMANDEL",
-      "signal_date": "2026-08-24",
-      "prev_close": 1929.8,
-      "entry_price": 1914.36,
-      "sl": 1866.5,
-      "t1": 1937.33,
-      "t2": 1967.96,
-      "details": {
-        "daily_range_pct": 4.34,
-        "close_position": 0.044,
-        "volume": 153139,
-        "vol_ma20": 101187,
-        "volume_spike": "True",
-        "close": 1929.8,
-        "vwap": 2062.09,
-        "below_vwap": "True",
-        "rsi": 18.3,
-        "rsi_ok": "True",
-        "sma20": 2061.61,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "CREDITACC",
-      "signal_date": "2026-08-24",
-      "prev_close": 1443.7,
-      "entry_price": 1432.15,
-      "sl": 1396.35,
-      "t1": 1449.34,
-      "t2": 1472.25,
-      "details": {
-        "daily_range_pct": 4.81,
-        "close_position": 0.212,
-        "volume": 384558,
-        "vol_ma20": 250587,
-        "volume_spike": "True",
-        "close": 1443.7,
-        "vwap": 1550.15,
-        "below_vwap": "True",
-        "rsi": 26.3,
-        "rsi_ok": "True",
-        "sma20": 1542.63,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "GODREJIND",
-      "signal_date": "2026-08-24",
-      "prev_close": 1184.5,
-      "entry_price": 1175.02,
-      "sl": 1145.65,
-      "t1": 1189.12,
-      "t2": 1207.92,
-      "details": {
-        "daily_range_pct": 6.22,
-        "close_position": 0.105,
-        "volume": 195293,
-        "vol_ma20": 118426,
-        "volume_spike": "True",
-        "close": 1184.5,
-        "vwap": 1262.75,
-        "below_vwap": "True",
-        "rsi": 24.1,
-        "rsi_ok": "True",
-        "sma20": 1272.31,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "HSCL",
-      "signal_date": "2026-08-24",
-      "prev_close": 662.2,
-      "entry_price": 656.9,
-      "sl": 640.48,
-      "t1": 664.79,
-      "t2": 675.3,
-      "details": {
-        "daily_range_pct": 4.21,
-        "close_position": 0.184,
-        "volume": 11630958,
-        "vol_ma20": 7015472,
-        "volume_spike": "True",
-        "close": 662.2,
-        "vwap": 736.64,
-        "below_vwap": "True",
-        "rsi": 30.7,
-        "rsi_ok": "True",
-        "sma20": 749.25,
-        "below_sma": "True"
-      }
-    }
-  ],
+  "pending": [],
   "executed": [
     {
       "ticker": "3MINDIA",
@@ -173,6 +80,38 @@
       "exit_reason": "bad_data",
       "net_pnl_pct": null,
       "executed_at": "2026-08-24 09:30:07"
+    },
+    {
+      "ticker": "COROMANDEL",
+      "signal_date": "2026-08-24",
+      "trade_date": "2026-08-25",
+      "exit_reason": "bad_data",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-25 09:24:15"
+    },
+    {
+      "ticker": "CREDITACC",
+      "signal_date": "2026-08-24",
+      "trade_date": "2026-08-25",
+      "exit_reason": "bad_data",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-25 09:24:15"
+    },
+    {
+      "ticker": "GODREJIND",
+      "signal_date": "2026-08-24",
+      "trade_date": "2026-08-25",
+      "exit_reason": "bad_data",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-25 09:24:15"
+    },
+    {
+      "ticker": "HSCL",
+      "signal_date": "2026-08-24",
+      "trade_date": "2026-08-25",
+      "exit_reason": "bad_data",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-25 09:24:15"
     }
   ]
 }
