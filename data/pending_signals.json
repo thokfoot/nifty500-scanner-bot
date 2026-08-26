@@ -22,6 +22,29 @@
         "sma20": 438.33,
         "below_sma": "True"
       }
+    },
+    {
+      "ticker": "PREMIERENE",
+      "signal_date": "2026-08-26",
+      "prev_close": 993.1,
+      "entry_price": 985.16,
+      "sl": 960.53,
+      "t1": 996.98,
+      "t2": 1012.74,
+      "details": {
+        "daily_range_pct": 4.83,
+        "close_position": 0.021,
+        "volume": 1559875,
+        "vol_ma20": 1021898,
+        "volume_spike": "True",
+        "close": 993.1,
+        "vwap": 1029.53,
+        "below_vwap": "True",
+        "rsi": 38.1,
+        "rsi_ok": "True",
+        "sma20": 1027.62,
+        "below_sma": "True"
+      }
     }
   ],
   "executed": [

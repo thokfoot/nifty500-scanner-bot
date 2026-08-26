@@ -97,3 +97,26 @@ Open Positions: 0
 RECENT CLOSED:
   HSCL STOP_LOSS | -2.80% net
   ASTERDM TIME_EXIT | -0.06% net
+
+==================================================
+RUN 2026-08-26 13:50 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-08-26 13:50 IST [LIVE]_
+Scanned: 500 | Signals: 1
+Executed: 0 | Closed: 0
+P&L today: Rs *+0* | WinRate: 0.0%
+📋 Pending: VBL, PREMIERENE
+
+PORTFOLIO SUMMARY
+Capital: Rs 199,720 (-0.14%)
+Total P&L: Rs -3
+Win/Loss: 0W / 2L (0.0% WR)
+Open Positions: 0
+
+RECENT CLOSED:
+  HSCL STOP_LOSS | -2.80% net
+  ASTERDM TIME_EXIT | -0.06% net
+🔍 NEW SIGNAL: PREMIERENE
+Entry 985.16 | SL 960.53
+T1 996.98 | T2 1012.74
+RSI 38.1 | Range 4.83% | CP 0.021
