@@ -40,3 +40,22 @@ Open Positions: 0
 RECENT CLOSED:
   HSCL STOP_LOSS | -2.80% net
   ASTERDM TIME_EXIT | -0.06% net
+
+==================================================
+RUN 2026-08-26 11:09 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-08-26 11:09 IST [LIVE]_
+Scanned: 500 | Signals: 0
+Executed: 0 | Closed: 0
+P&L today: Rs *+0* | WinRate: 0.0%
+📋 Pending: VBL
+
+PORTFOLIO SUMMARY
+Capital: Rs 199,720 (-0.14%)
+Total P&L: Rs -3
+Win/Loss: 0W / 2L (0.0% WR)
+Open Positions: 0
+
+RECENT CLOSED:
+  HSCL STOP_LOSS | -2.80% net
+  ASTERDM TIME_EXIT | -0.06% net
