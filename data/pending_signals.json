@@ -1,48 +1,48 @@
 {
   "pending": [
     {
-      "ticker": "VBL",
-      "signal_date": "2026-08-26",
-      "prev_close": 428.6,
-      "entry_price": 425.17,
-      "sl": 414.54,
-      "t1": 430.27,
-      "t2": 437.08,
+      "ticker": "BIKAJI",
+      "signal_date": "2026-08-27",
+      "prev_close": 611.9,
+      "entry_price": 607.0,
+      "sl": 591.83,
+      "t1": 614.29,
+      "t2": 624.0,
       "details": {
-        "daily_range_pct": 4.82,
-        "close_position": 0.063,
-        "volume": 6536919,
-        "vol_ma20": 4041067,
+        "daily_range_pct": 4.66,
+        "close_position": 0.152,
+        "volume": 663367,
+        "vol_ma20": 141421,
         "volume_spike": "True",
-        "close": 428.6,
-        "vwap": 439.83,
+        "close": 611.9,
+        "vwap": 621.77,
         "below_vwap": "True",
-        "rsi": 39.5,
+        "rsi": 39.0,
         "rsi_ok": "True",
-        "sma20": 438.33,
+        "sma20": 619.58,
         "below_sma": "True"
       }
     },
     {
-      "ticker": "PREMIERENE",
-      "signal_date": "2026-08-26",
-      "prev_close": 993.1,
-      "entry_price": 985.16,
-      "sl": 960.53,
-      "t1": 996.98,
-      "t2": 1012.74,
+      "ticker": "EMAMILTD",
+      "signal_date": "2026-08-27",
+      "prev_close": 387.7,
+      "entry_price": 384.6,
+      "sl": 374.98,
+      "t1": 389.21,
+      "t2": 395.37,
       "details": {
-        "daily_range_pct": 4.83,
-        "close_position": 0.021,
-        "volume": 1559875,
-        "vol_ma20": 1021898,
+        "daily_range_pct": 5.04,
+        "close_position": 0.126,
+        "volume": 1314363,
+        "vol_ma20": 837330,
         "volume_spike": "True",
-        "close": 993.1,
-        "vwap": 1029.53,
+        "close": 387.7,
+        "vwap": 403.1,
         "below_vwap": "True",
-        "rsi": 38.1,
+        "rsi": 29.3,
         "rsi_ok": "True",
-        "sma20": 1027.62,
+        "sma20": 402.36,
         "below_sma": "True"
       }
     }
@@ -175,6 +175,22 @@
       "exit_reason": "bad_data",
       "net_pnl_pct": null,
       "executed_at": "2026-08-26 09:28:47"
+    },
+    {
+      "ticker": "VBL",
+      "signal_date": "2026-08-26",
+      "trade_date": "2026-08-27",
+      "exit_reason": "TIME_EXIT",
+      "net_pnl_pct": -1.516,
+      "executed_at": "2026-08-27 19:32:14"
+    },
+    {
+      "ticker": "PREMIERENE",
+      "signal_date": "2026-08-26",
+      "trade_date": "2026-08-27",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-27 19:32:14"
     }
   ]
 }
