@@ -1,5 +1,5 @@
 {
-  "capital": 199571.98,
+  "capital": 199432.79,
   "initial_capital": 200000.0,
   "holdings": [],
   "closed_trades": [
@@ -99,6 +99,43 @@
         "rsi": 39.5,
         "rsi_ok": "True",
         "sma20": 438.33,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "EMAMILTD",
+      "signal_date": "2026-08-27",
+      "entry_date": "2026-08-28",
+      "exit_date": "2026-08-28",
+      "entry_price": 384.6,
+      "exit_price": 380.4,
+      "exit_reason": "TIME_EXIT",
+      "qty": 26,
+      "sl": 374.98,
+      "sl_eff": 374.98,
+      "t1": 389.21,
+      "t2": 395.37,
+      "half_booked": false,
+      "gross_pnl_pct": -1.092,
+      "net_pnl_pct": -1.392,
+      "pnl": -1.392,
+      "pnl_net": -1.392,
+      "pnl_pct": -1.392,
+      "holding_candles": 25,
+      "exit_candle_low": 378.4,
+      "exit_candle_high": 388.55,
+      "details": {
+        "daily_range_pct": 5.04,
+        "close_position": 0.126,
+        "volume": 1314363,
+        "vol_ma20": 837330,
+        "volume_spike": "True",
+        "close": 387.7,
+        "vwap": 403.1,
+        "below_vwap": "True",
+        "rsi": 29.3,
+        "rsi_ok": "True",
+        "sma20": 402.36,
         "below_sma": "True"
       }
     }
@@ -355,13 +392,110 @@
       "qty": 10,
       "status": "REJECTED",
       "note": "gap-up open 1002.20 > entry*1.015"
+    },
+    {
+      "order_id": "7081EBE62C",
+      "ts": "2026-08-28 20:43:24",
+      "ticker": "BIKAJI",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 607.0,
+      "trigger": null,
+      "qty": 16,
+      "status": "PLACED",
+      "note": "ENTRY MIS DAY"
+    },
+    {
+      "order_id": "7081EBE62C",
+      "ts": "2026-08-28 20:43:24",
+      "ticker": "BIKAJI",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 607.0,
+      "trigger": null,
+      "qty": 16,
+      "status": "CANCELLED",
+      "note": "DAY expired unfilled"
+    },
+    {
+      "order_id": "AC11BADE6F",
+      "ts": "2026-08-28 20:43:24",
+      "ticker": "EMAMILTD",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 384.6,
+      "trigger": null,
+      "qty": 26,
+      "status": "PLACED",
+      "note": "ENTRY MIS DAY"
+    },
+    {
+      "order_id": "AC11BADE6F",
+      "ts": "2026-08-28 20:43:24",
+      "ticker": "EMAMILTD",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 384.6,
+      "trigger": null,
+      "qty": 26,
+      "status": "FILLED",
+      "note": "@ 2026-08-28 09:15:00"
+    },
+    {
+      "order_id": "F7B517CE6D",
+      "ts": "2026-08-28 20:43:24",
+      "ticker": "EMAMILTD",
+      "side": "SELL",
+      "type": "SL-M",
+      "price": null,
+      "trigger": 374.98,
+      "qty": 26,
+      "status": "PLACED",
+      "note": "protective SL"
+    },
+    {
+      "order_id": "4B505E99E9",
+      "ts": "2026-08-28 20:43:24",
+      "ticker": "EMAMILTD",
+      "side": "SELL",
+      "type": "LIMIT",
+      "price": 389.21,
+      "trigger": null,
+      "qty": 13,
+      "status": "PLACED",
+      "note": "T1 50%"
+    },
+    {
+      "order_id": "6742D7CAD5",
+      "ts": "2026-08-28 20:43:24",
+      "ticker": "EMAMILTD",
+      "side": "SELL",
+      "type": "LIMIT",
+      "price": 395.37,
+      "trigger": null,
+      "qty": 13,
+      "status": "PLACED",
+      "note": "T2 rest"
+    },
+    {
+      "order_id": "0A87174464",
+      "ts": "2026-08-28 20:43:24",
+      "ticker": "EMAMILTD",
+      "side": "SELL",
+      "type": "MARKET",
+      "price": null,
+      "trigger": null,
+      "qty": 26,
+      "status": "FILLED",
+      "note": "time exit @ 380.40"
     }
   ],
   "daily_pnl": {
     "2026-08-21": -279.77,
-    "2026-08-27": -148.25
+    "2026-08-27": -148.25,
+    "2026-08-28": -139.19
   },
-  "total_pnl": -4.376,
+  "total_pnl": -5.768,
   "wins": 0,
-  "losses": 3
+  "losses": 4
 }

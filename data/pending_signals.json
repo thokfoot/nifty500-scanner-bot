@@ -1,48 +1,25 @@
 {
   "pending": [
     {
-      "ticker": "BIKAJI",
-      "signal_date": "2026-08-27",
-      "prev_close": 611.9,
-      "entry_price": 607.0,
-      "sl": 591.83,
-      "t1": 614.29,
-      "t2": 624.0,
+      "ticker": "AAVAS",
+      "signal_date": "2026-08-28",
+      "prev_close": 1275.5,
+      "entry_price": 1265.3,
+      "sl": 1233.66,
+      "t1": 1280.48,
+      "t2": 1300.72,
       "details": {
-        "daily_range_pct": 4.66,
-        "close_position": 0.152,
-        "volume": 663367,
-        "vol_ma20": 141421,
+        "daily_range_pct": 5.51,
+        "close_position": 0.164,
+        "volume": 348777,
+        "vol_ma20": 111363,
         "volume_spike": "True",
-        "close": 611.9,
-        "vwap": 621.77,
+        "close": 1275.5,
+        "vwap": 1347.9,
         "below_vwap": "True",
-        "rsi": 39.0,
+        "rsi": 19.5,
         "rsi_ok": "True",
-        "sma20": 619.58,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "EMAMILTD",
-      "signal_date": "2026-08-27",
-      "prev_close": 387.7,
-      "entry_price": 384.6,
-      "sl": 374.98,
-      "t1": 389.21,
-      "t2": 395.37,
-      "details": {
-        "daily_range_pct": 5.04,
-        "close_position": 0.126,
-        "volume": 1314363,
-        "vol_ma20": 837330,
-        "volume_spike": "True",
-        "close": 387.7,
-        "vwap": 403.1,
-        "below_vwap": "True",
-        "rsi": 29.3,
-        "rsi_ok": "True",
-        "sma20": 402.36,
+        "sma20": 1367.63,
         "below_sma": "True"
       }
     }
@@ -191,6 +168,22 @@
       "exit_reason": "no_fill",
       "net_pnl_pct": null,
       "executed_at": "2026-08-27 19:32:14"
+    },
+    {
+      "ticker": "BIKAJI",
+      "signal_date": "2026-08-27",
+      "trade_date": "2026-08-28",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-28 20:43:24"
+    },
+    {
+      "ticker": "EMAMILTD",
+      "signal_date": "2026-08-27",
+      "trade_date": "2026-08-28",
+      "exit_reason": "TIME_EXIT",
+      "net_pnl_pct": -1.392,
+      "executed_at": "2026-08-28 20:43:24"
     }
   ]
 }

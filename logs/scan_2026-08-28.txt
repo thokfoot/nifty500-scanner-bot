@@ -1,0 +1,30 @@
+
+==================================================
+RUN 2026-08-28 20:42 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-08-28 20:42 IST [LIVE]_
+Scanned: 500 | Signals: 1
+Executed: 1 | Closed: 1
+P&L today: Rs *-139* | WinRate: 0.0%
+📋 Pending: AAVAS
+
+PORTFOLIO SUMMARY
+Capital: Rs 199,433 (-0.28%)
+Total P&L: Rs -6
+Win/Loss: 0W / 4L (0.0% WR)
+Open Positions: 0
+
+RECENT CLOSED:
+  HSCL STOP_LOSS | -2.80% net
+  ASTERDM TIME_EXIT | -0.06% net
+  VBL TIME_EXIT | -1.52% net
+  EMAMILTD TIME_EXIT | -1.39% net
+❌ NO_FILL: BIKAJI
+Entry 607.0 not touched
+Day Low 612.4500122070312
+⏰ TIME_EXIT: EMAMILTD
+@ 380.4 | Net -1.39% (Rs -139)
+🔍 NEW SIGNAL: AAVAS
+Entry 1265.3 | SL 1233.66
+T1 1280.48 | T2 1300.72
+RSI 19.5 | Range 5.51% | CP 0.164
