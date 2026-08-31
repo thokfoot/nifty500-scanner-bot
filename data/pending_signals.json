@@ -1,29 +1,6 @@
 {
   "pending": [
     {
-      "ticker": "AAVAS",
-      "signal_date": "2026-08-31",
-      "prev_close": 1260.0,
-      "entry_price": 1249.92,
-      "sl": 1218.67,
-      "t1": 1264.92,
-      "t2": 1284.92,
-      "details": {
-        "daily_range_pct": 5.44,
-        "close_position": 0.082,
-        "volume": 220983,
-        "vol_ma20": 115301,
-        "volume_spike": "True",
-        "close": 1260.0,
-        "vwap": 1337.01,
-        "below_vwap": "True",
-        "rsi": 18.8,
-        "rsi_ok": "True",
-        "sma20": 1358.68,
-        "below_sma": "True"
-      }
-    },
-    {
       "ticker": "ADANIENSOL",
       "signal_date": "2026-08-31",
       "prev_close": 1455.8,
@@ -181,6 +158,282 @@
         "rsi": 22.6,
         "rsi_ok": "True",
         "sma20": 37191.25,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "3MINDIA",
+      "signal_date": "2026-08-31",
+      "prev_close": 33320.0,
+      "entry_price": 33053.44,
+      "sl": 32227.1,
+      "t1": 33450.08,
+      "t2": 33978.94,
+      "details": {
+        "daily_range_pct": 3.89,
+        "close_position": 0.151,
+        "volume": 7423,
+        "vol_ma20": 4180,
+        "volume_spike": "True",
+        "close": 33320.0,
+        "vwap": 35230.4,
+        "below_vwap": "True",
+        "rsi": 27.2,
+        "rsi_ok": "True",
+        "sma20": 34912.0,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "ADANIPOWER",
+      "signal_date": "2026-08-31",
+      "prev_close": 198.0,
+      "entry_price": 196.42,
+      "sl": 191.51,
+      "t1": 198.77,
+      "t2": 201.92,
+      "details": {
+        "daily_range_pct": 7.64,
+        "close_position": 0.0,
+        "volume": 53722599,
+        "vol_ma20": 19068658,
+        "volume_spike": "True",
+        "close": 198.0,
+        "vwap": 207.94,
+        "below_vwap": "True",
+        "rsi": 36.5,
+        "rsi_ok": "True",
+        "sma20": 206.98,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "ADANIENT",
+      "signal_date": "2026-08-31",
+      "prev_close": 2859.1,
+      "entry_price": 2836.23,
+      "sl": 2765.32,
+      "t1": 2870.26,
+      "t2": 2915.64,
+      "details": {
+        "daily_range_pct": 10.7,
+        "close_position": 0.0,
+        "volume": 12690120,
+        "vol_ma20": 1687894,
+        "volume_spike": "True",
+        "close": 2859.1,
+        "vwap": 3011.51,
+        "below_vwap": "True",
+        "rsi": 39.2,
+        "rsi_ok": "True",
+        "sma20": 3027.32,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "ADANIGREEN",
+      "signal_date": "2026-08-31",
+      "prev_close": 1214.9,
+      "entry_price": 1205.18,
+      "sl": 1175.05,
+      "t1": 1219.64,
+      "t2": 1238.93,
+      "details": {
+        "daily_range_pct": 7.9,
+        "close_position": 0.0,
+        "volume": 2415338,
+        "vol_ma20": 1438126,
+        "volume_spike": "True",
+        "close": 1214.9,
+        "vwap": 1333.31,
+        "below_vwap": "True",
+        "rsi": 28.9,
+        "rsi_ok": "True",
+        "sma20": 1329.41,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "ADANIPORTS",
+      "signal_date": "2026-08-31",
+      "prev_close": 1593.1,
+      "entry_price": 1580.36,
+      "sl": 1540.85,
+      "t1": 1599.32,
+      "t2": 1624.61,
+      "details": {
+        "daily_range_pct": 7.43,
+        "close_position": 0.0,
+        "volume": 9166870,
+        "vol_ma20": 2132225,
+        "volume_spike": "True",
+        "close": 1593.1,
+        "vwap": 1677.17,
+        "below_vwap": "True",
+        "rsi": 37.5,
+        "rsi_ok": "True",
+        "sma20": 1684.98,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "BHARTIARTL",
+      "signal_date": "2026-08-31",
+      "prev_close": 1811.9,
+      "entry_price": 1797.4,
+      "sl": 1752.47,
+      "t1": 1818.97,
+      "t2": 1847.73,
+      "details": {
+        "daily_range_pct": 4.61,
+        "close_position": 0.0,
+        "volume": 16816995,
+        "vol_ma20": 7127826,
+        "volume_spike": "True",
+        "close": 1811.9,
+        "vwap": 1931.58,
+        "below_vwap": "True",
+        "rsi": 35.2,
+        "rsi_ok": "True",
+        "sma20": 1933.01,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "CCL",
+      "signal_date": "2026-08-31",
+      "prev_close": 1079.8,
+      "entry_price": 1071.16,
+      "sl": 1044.38,
+      "t1": 1084.02,
+      "t2": 1101.15,
+      "details": {
+        "daily_range_pct": 5.47,
+        "close_position": 0.225,
+        "volume": 258169,
+        "vol_ma20": 162161,
+        "volume_spike": "True",
+        "close": 1079.8,
+        "vwap": 1116.21,
+        "below_vwap": "True",
+        "rsi": 36.1,
+        "rsi_ok": "True",
+        "sma20": 1119.09,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "GMRAIRPORT",
+      "signal_date": "2026-08-31",
+      "prev_close": 93.63,
+      "entry_price": 92.88,
+      "sl": 90.56,
+      "t1": 94.0,
+      "t2": 95.48,
+      "details": {
+        "daily_range_pct": 4.67,
+        "close_position": 0.0,
+        "volume": 59706242,
+        "vol_ma20": 12577645,
+        "volume_spike": "True",
+        "close": 93.63,
+        "vwap": 100.6,
+        "below_vwap": "True",
+        "rsi": 13.9,
+        "rsi_ok": "True",
+        "sma20": 102.06,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "ITC",
+      "signal_date": "2026-08-31",
+      "prev_close": 255.5,
+      "entry_price": 253.46,
+      "sl": 247.12,
+      "t1": 256.5,
+      "t2": 260.55,
+      "details": {
+        "daily_range_pct": 4.32,
+        "close_position": 0.0,
+        "volume": 24555781,
+        "vol_ma20": 12586270,
+        "volume_spike": "True",
+        "close": 255.5,
+        "vwap": 273.62,
+        "below_vwap": "True",
+        "rsi": 21.6,
+        "rsi_ok": "True",
+        "sma20": 274.77,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "LATENTVIEW",
+      "signal_date": "2026-08-31",
+      "prev_close": 269.8,
+      "entry_price": 267.64,
+      "sl": 260.95,
+      "t1": 270.85,
+      "t2": 275.14,
+      "details": {
+        "daily_range_pct": 3.96,
+        "close_position": 0.198,
+        "volume": 2243930,
+        "vol_ma20": 541809,
+        "volume_spike": "True",
+        "close": 269.8,
+        "vwap": 283.18,
+        "below_vwap": "True",
+        "rsi": 25.2,
+        "rsi_ok": "True",
+        "sma20": 285.04,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "VTL",
+      "signal_date": "2026-08-31",
+      "prev_close": 572.05,
+      "entry_price": 567.47,
+      "sl": 553.29,
+      "t1": 574.28,
+      "t2": 583.36,
+      "details": {
+        "daily_range_pct": 4.94,
+        "close_position": 0.18,
+        "volume": 422863,
+        "vol_ma20": 208448,
+        "volume_spike": "True",
+        "close": 572.05,
+        "vwap": 591.95,
+        "below_vwap": "True",
+        "rsi": 30.6,
+        "rsi_ok": "True",
+        "sma20": 592.48,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "ZENSARTECH",
+      "signal_date": "2026-08-31",
+      "prev_close": 460.35,
+      "entry_price": 456.67,
+      "sl": 445.25,
+      "t1": 462.15,
+      "t2": 469.45,
+      "details": {
+        "daily_range_pct": 4.32,
+        "close_position": 0.221,
+        "volume": 1334165,
+        "vol_ma20": 713772,
+        "volume_spike": "True",
+        "close": 460.35,
+        "vwap": 487.94,
+        "below_vwap": "True",
+        "rsi": 23.7,
+        "rsi_ok": "True",
+        "sma20": 486.64,
         "below_sma": "True"
       }
     }
@@ -353,6 +606,14 @@
       "exit_reason": "OPEN_POSITION",
       "net_pnl_pct": null,
       "executed_at": "2026-08-31 15:05:25"
+    },
+    {
+      "ticker": "AAVAS",
+      "signal_date": "2026-08-31",
+      "trade_date": "2026-08-31",
+      "exit_reason": "OPEN_POSITION",
+      "net_pnl_pct": null,
+      "executed_at": "2026-08-31 22:45:41"
     }
   ]
 }

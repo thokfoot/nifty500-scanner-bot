@@ -1,40 +1,7 @@
 {
-  "capital": 199432.79,
+  "capital": 199369.11,
   "initial_capital": 200000.0,
-  "holdings": [
-    {
-      "ticker": "AAVAS",
-      "signal_date": "2026-08-28",
-      "trade_date": "2026-08-31",
-      "entry_price": 1265.3,
-      "qty": 7,
-      "sl": 1233.66,
-      "sl_eff": 1233.66,
-      "t1": 1280.48,
-      "t2": 1300.72,
-      "half_booked": false,
-      "pnl_banked_pct": 0.0,
-      "entry_ts": "2026-08-31 11:30:00",
-      "last_candle_ts": "2026-08-31 15:00:00",
-      "day_low": 1255.0,
-      "day_high": 1278.800048828125,
-      "status": "OPEN",
-      "details": {
-        "daily_range_pct": 5.51,
-        "close_position": 0.164,
-        "volume": 348777,
-        "vol_ma20": 111363,
-        "volume_spike": "True",
-        "close": 1275.5,
-        "vwap": 1347.9,
-        "below_vwap": "True",
-        "rsi": 19.5,
-        "rsi_ok": "True",
-        "sma20": 1367.63,
-        "below_sma": "True"
-      }
-    }
-  ],
+  "holdings": [],
   "closed_trades": [
     {
       "ticker": "HSCL",
@@ -169,6 +136,43 @@
         "rsi": 29.3,
         "rsi_ok": "True",
         "sma20": 402.36,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "AAVAS",
+      "signal_date": "2026-08-28",
+      "entry_date": "2026-08-31",
+      "exit_date": "2026-08-31",
+      "entry_price": 1265.3,
+      "exit_price": 1260.0,
+      "exit_reason": "TIME_EXIT",
+      "qty": 7,
+      "sl": 1233.66,
+      "sl_eff": 1233.66,
+      "t1": 1280.48,
+      "t2": 1300.72,
+      "half_booked": false,
+      "gross_pnl_pct": -0.419,
+      "net_pnl_pct": -0.719,
+      "pnl": -0.719,
+      "pnl_net": -0.719,
+      "pnl_pct": -0.719,
+      "holding_candles": 1,
+      "exit_candle_low": 1255.0,
+      "exit_candle_high": 1278.8,
+      "details": {
+        "daily_range_pct": 5.51,
+        "close_position": 0.164,
+        "volume": 348777,
+        "vol_ma20": 111363,
+        "volume_spike": "True",
+        "close": 1275.5,
+        "vwap": 1347.9,
+        "below_vwap": "True",
+        "rsi": 19.5,
+        "rsi_ok": "True",
+        "sma20": 1367.63,
         "below_sma": "True"
       }
     }
@@ -581,14 +585,27 @@
       "qty": 4,
       "status": "PLACED",
       "note": "T2 rest"
+    },
+    {
+      "order_id": "6126438D35",
+      "ts": "2026-08-31 22:45:41",
+      "ticker": "AAVAS",
+      "side": "SELL",
+      "type": "MARKET",
+      "price": null,
+      "trigger": null,
+      "qty": 7,
+      "status": "FILLED",
+      "note": "time exit @ 1260.00"
     }
   ],
   "daily_pnl": {
     "2026-08-21": -279.77,
     "2026-08-27": -148.25,
-    "2026-08-28": -139.19
+    "2026-08-28": -139.19,
+    "2026-08-31": -63.68
   },
-  "total_pnl": -5.768,
+  "total_pnl": -6.487,
   "wins": 0,
-  "losses": 4
+  "losses": 5
 }
