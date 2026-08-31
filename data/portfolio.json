@@ -1,7 +1,40 @@
 {
   "capital": 199432.79,
   "initial_capital": 200000.0,
-  "holdings": [],
+  "holdings": [
+    {
+      "ticker": "AAVAS",
+      "signal_date": "2026-08-28",
+      "trade_date": "2026-08-31",
+      "entry_price": 1265.3,
+      "qty": 7,
+      "sl": 1233.66,
+      "sl_eff": 1233.66,
+      "t1": 1280.48,
+      "t2": 1300.72,
+      "half_booked": false,
+      "pnl_banked_pct": 0.0,
+      "entry_ts": "2026-08-31 11:30:00",
+      "last_candle_ts": "2026-08-31 15:00:00",
+      "day_low": 1255.0,
+      "day_high": 1278.800048828125,
+      "status": "OPEN",
+      "details": {
+        "daily_range_pct": 5.51,
+        "close_position": 0.164,
+        "volume": 348777,
+        "vol_ma20": 111363,
+        "volume_spike": "True",
+        "close": 1275.5,
+        "vwap": 1347.9,
+        "below_vwap": "True",
+        "rsi": 19.5,
+        "rsi_ok": "True",
+        "sma20": 1367.63,
+        "below_sma": "True"
+      }
+    }
+  ],
   "closed_trades": [
     {
       "ticker": "HSCL",
@@ -488,6 +521,66 @@
       "qty": 26,
       "status": "FILLED",
       "note": "time exit @ 380.40"
+    },
+    {
+      "order_id": "4300E19DA9",
+      "ts": "2026-08-31 15:05:25",
+      "ticker": "AAVAS",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 1265.3,
+      "trigger": null,
+      "qty": 7,
+      "status": "PLACED",
+      "note": "ENTRY MIS DAY"
+    },
+    {
+      "order_id": "4300E19DA9",
+      "ts": "2026-08-31 15:05:25",
+      "ticker": "AAVAS",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 1265.3,
+      "trigger": null,
+      "qty": 7,
+      "status": "FILLED",
+      "note": "@ 2026-08-31 11:30:00"
+    },
+    {
+      "order_id": "120C1A7E62",
+      "ts": "2026-08-31 15:05:25",
+      "ticker": "AAVAS",
+      "side": "SELL",
+      "type": "SL-M",
+      "price": null,
+      "trigger": 1233.66,
+      "qty": 7,
+      "status": "PLACED",
+      "note": "protective SL"
+    },
+    {
+      "order_id": "E05FC0E822",
+      "ts": "2026-08-31 15:05:25",
+      "ticker": "AAVAS",
+      "side": "SELL",
+      "type": "LIMIT",
+      "price": 1280.48,
+      "trigger": null,
+      "qty": 3,
+      "status": "PLACED",
+      "note": "T1 50%"
+    },
+    {
+      "order_id": "CE729F36A4",
+      "ts": "2026-08-31 15:05:25",
+      "ticker": "AAVAS",
+      "side": "SELL",
+      "type": "LIMIT",
+      "price": 1300.72,
+      "trigger": null,
+      "qty": 4,
+      "status": "PLACED",
+      "note": "T2 rest"
     }
   ],
   "daily_pnl": {
