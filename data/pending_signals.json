@@ -114,6 +114,75 @@
         "sma20": 13718.25,
         "below_sma": "True"
       }
+    },
+    {
+      "ticker": "JWL",
+      "signal_date": "2026-09-01",
+      "prev_close": 242.36,
+      "entry_price": 240.42,
+      "sl": 234.41,
+      "t1": 243.31,
+      "t2": 247.15,
+      "details": {
+        "daily_range_pct": 5.12,
+        "close_position": 0.22,
+        "volume": 1160951,
+        "vol_ma20": 725050,
+        "volume_spike": "True",
+        "close": 242.36,
+        "vwap": 254.18,
+        "below_vwap": "True",
+        "rsi": 12.6,
+        "rsi_ok": "True",
+        "sma20": 251.87,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "KEI",
+      "signal_date": "2026-09-01",
+      "prev_close": 5348.0,
+      "entry_price": 5305.22,
+      "sl": 5172.59,
+      "t1": 5368.88,
+      "t2": 5453.76,
+      "details": {
+        "daily_range_pct": 5.79,
+        "close_position": 0.151,
+        "volume": 657461,
+        "vol_ma20": 374466,
+        "volume_spike": "True",
+        "close": 5348.0,
+        "vwap": 5611.7,
+        "below_vwap": "True",
+        "rsi": 35.7,
+        "rsi_ok": "True",
+        "sma20": 5634.14,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "POLYCAB",
+      "signal_date": "2026-09-01",
+      "prev_close": 8895.5,
+      "entry_price": 8824.34,
+      "sl": 8603.73,
+      "t1": 8930.23,
+      "t2": 9071.42,
+      "details": {
+        "daily_range_pct": 3.81,
+        "close_position": 0.072,
+        "volume": 652932,
+        "vol_ma20": 284165,
+        "volume_spike": "True",
+        "close": 8895.5,
+        "vwap": 9143.7,
+        "below_vwap": "True",
+        "rsi": 38.5,
+        "rsi_ok": "True",
+        "sma20": 9170.92,
+        "below_sma": "True"
+      }
     }
   ],
   "executed": [
