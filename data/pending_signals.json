@@ -68,6 +68,75 @@
         "sma20": 2821.32,
         "below_sma": "True"
       }
+    },
+    {
+      "ticker": "AIIL",
+      "signal_date": "2026-09-02",
+      "prev_close": 507.45,
+      "entry_price": 503.39,
+      "sl": 490.81,
+      "t1": 509.43,
+      "t2": 517.49,
+      "details": {
+        "daily_range_pct": 7.17,
+        "close_position": 0.072,
+        "volume": 1026577,
+        "vol_ma20": 631231,
+        "volume_spike": "True",
+        "close": 507.45,
+        "vwap": 565.88,
+        "below_vwap": "True",
+        "rsi": 29.4,
+        "rsi_ok": "True",
+        "sma20": 559.08,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "KEI",
+      "signal_date": "2026-09-02",
+      "prev_close": 5170.0,
+      "entry_price": 5128.64,
+      "sl": 5000.42,
+      "t1": 5190.18,
+      "t2": 5272.24,
+      "details": {
+        "daily_range_pct": 3.96,
+        "close_position": 0.187,
+        "volume": 666046,
+        "vol_ma20": 355341,
+        "volume_spike": "True",
+        "close": 5170.0,
+        "vwap": 5584.94,
+        "below_vwap": "True",
+        "rsi": 30.2,
+        "rsi_ok": "True",
+        "sma20": 5613.79,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "VOLTAS",
+      "signal_date": "2026-09-02",
+      "prev_close": 1152.1,
+      "entry_price": 1142.88,
+      "sl": 1114.31,
+      "t1": 1156.6,
+      "t2": 1174.88,
+      "details": {
+        "daily_range_pct": 4.25,
+        "close_position": 0.022,
+        "volume": 1979841,
+        "vol_ma20": 1085403,
+        "volume_spike": "True",
+        "close": 1152.1,
+        "vwap": 1253.28,
+        "below_vwap": "True",
+        "rsi": 24.4,
+        "rsi_ok": "True",
+        "sma20": 1243.82,
+        "below_sma": "True"
+      }
     }
   ],
   "executed": [

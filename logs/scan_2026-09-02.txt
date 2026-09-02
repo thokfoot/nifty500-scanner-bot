@@ -94,3 +94,56 @@ RSI 18.8 | Range 6.15% | CP 0.206
 Entry 2641.0 | SL 2574.98
 T1 2672.69 | T2 2714.95
 RSI 38.9 | Range 8.1% | CP 0.037
+
+==================================================
+RUN 2026-09-02 18:12 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-09-02 18:12 IST [LIVE]_
+Scanned: 500 | Signals: 3
+Executed: 0 | Closed: 7
+P&L today: Rs *-129* | WinRate: 25.0%
+📋 Pending: EICHERMOT, HEROMOTOCO, RRKABEL, AIIL, KEI, VOLTAS
+
+PORTFOLIO SUMMARY
+Capital: Rs 198,964 (-0.52%)
+Total P&L: Rs -13
+Win/Loss: 4W / 12L (25.0% WR)
+Open Positions: 0
+
+RECENT CLOSED:
+  JAINREC TIME_EXIT | +1.03% net
+  MARUTI TIME_EXIT | -0.22% net
+  JWL TIME_EXIT | -0.74% net
+  KEI STOP_LOSS | -2.80% net
+  POLYCAB TIME_EXIT | -0.53% net
+⏰ TIME_EXIT: ADANIENSOL
+@ 1396.6 | Net +1.32% (Rs +127)
+⏰ TIME_EXIT: BIKAJI
+@ 589.0 | Net -0.64% (Rs -60)
+🎯 T1 HIT: JAINREC
+T1 281.39 booked 50% (+0.60%)
+SL shifted to BE 278.06
+Remaining 50% running for T2 285.84
+⏰ TIME_EXIT: JAINREC
+@ 282.15 | Net +1.03% (Rs +101)
+⏰ TIME_EXIT: MARUTI
+@ 12849.0 | Net -0.22% (Rs -28)
+⏰ TIME_EXIT: JWL
+@ 239.37 | Net -0.74% (Rs -73)
+🛑 STOP_LOSS: KEI
+SL 5172.59 hit | Low 5164.5
+Loss -2.80% net (Rs -149)
+⏰ TIME_EXIT: POLYCAB
+@ 8804.0 | Net -0.53% (Rs -47)
+🔍 NEW SIGNAL: AIIL
+Entry 503.39 | SL 490.81
+T1 509.43 | T2 517.49
+RSI 29.4 | Range 7.17% | CP 0.072
+🔍 NEW SIGNAL: KEI
+Entry 5128.64 | SL 5000.42
+T1 5190.18 | T2 5272.24
+RSI 30.2 | Range 3.96% | CP 0.187
+🔍 NEW SIGNAL: VOLTAS
+Entry 1142.88 | SL 1114.31
+T1 1156.6 | T2 1174.88
+RSI 24.4 | Range 4.25% | CP 0.022
