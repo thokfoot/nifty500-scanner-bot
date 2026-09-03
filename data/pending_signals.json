@@ -22,6 +22,52 @@
         "sma20": 1463.73,
         "below_sma": "True"
       }
+    },
+    {
+      "ticker": "OLECTRA",
+      "signal_date": "2026-09-03",
+      "prev_close": 1244.8,
+      "entry_price": 1234.84,
+      "sl": 1203.97,
+      "t1": 1249.66,
+      "t2": 1269.42,
+      "details": {
+        "daily_range_pct": 4.01,
+        "close_position": 0.097,
+        "volume": 710112,
+        "vol_ma20": 415438,
+        "volume_spike": "True",
+        "close": 1244.8,
+        "vwap": 1323.45,
+        "below_vwap": "True",
+        "rsi": 33.8,
+        "rsi_ok": "True",
+        "sma20": 1318.02,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "UBL",
+      "signal_date": "2026-09-03",
+      "prev_close": 1284.2,
+      "entry_price": 1273.93,
+      "sl": 1242.08,
+      "t1": 1289.21,
+      "t2": 1309.6,
+      "details": {
+        "daily_range_pct": 3.57,
+        "close_position": 0.098,
+        "volume": 161021,
+        "vol_ma20": 82888,
+        "volume_spike": "True",
+        "close": 1284.2,
+        "vwap": 1352.02,
+        "below_vwap": "True",
+        "rsi": 14.8,
+        "rsi_ok": "True",
+        "sma20": 1350.86,
+        "below_sma": "True"
+      }
     }
   ],
   "executed": [

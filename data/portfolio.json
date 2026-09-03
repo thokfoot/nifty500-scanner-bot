@@ -1,40 +1,7 @@
 {
-  "capital": 198964.38,
+  "capital": 198907.57,
   "initial_capital": 200000.0,
-  "holdings": [
-    {
-      "ticker": "RRKABEL",
-      "signal_date": "2026-09-02",
-      "trade_date": "2026-09-03",
-      "entry_price": 2641.0,
-      "qty": 3,
-      "sl": 2574.98,
-      "sl_eff": 2574.98,
-      "t1": 2672.69,
-      "t2": 2714.95,
-      "half_booked": false,
-      "pnl_banked_pct": 0.0,
-      "entry_ts": "2026-09-03 09:15:00",
-      "last_candle_ts": "2026-09-03 13:15:00",
-      "day_low": 2605.800048828125,
-      "day_high": 2685.89990234375,
-      "status": "OPEN",
-      "details": {
-        "daily_range_pct": 8.1,
-        "close_position": 0.037,
-        "volume": 707755,
-        "vol_ma20": 408294,
-        "volume_spike": "True",
-        "close": 2662.3,
-        "vwap": 2832.17,
-        "below_vwap": "True",
-        "rsi": 38.9,
-        "rsi_ok": "True",
-        "sma20": 2821.32,
-        "below_sma": "True"
-      }
-    }
-  ],
+  "holdings": [],
   "closed_trades": [
     {
       "ticker": "HSCL",
@@ -613,6 +580,43 @@
         "rsi": 38.5,
         "rsi_ok": "True",
         "sma20": 9170.92,
+        "below_sma": "True"
+      }
+    },
+    {
+      "ticker": "RRKABEL",
+      "signal_date": "2026-09-02",
+      "entry_date": "2026-09-03",
+      "exit_date": "2026-09-03",
+      "entry_price": 2641.0,
+      "exit_price": 2630.0,
+      "exit_reason": "TIME_EXIT",
+      "qty": 3,
+      "sl": 2574.98,
+      "sl_eff": 2574.98,
+      "t1": 2672.69,
+      "t2": 2714.95,
+      "half_booked": false,
+      "gross_pnl_pct": -0.417,
+      "net_pnl_pct": -0.717,
+      "pnl": -0.717,
+      "pnl_net": -0.717,
+      "pnl_pct": -0.717,
+      "holding_candles": 8,
+      "exit_candle_low": 2594.0,
+      "exit_candle_high": 2685.9,
+      "details": {
+        "daily_range_pct": 8.1,
+        "close_position": 0.037,
+        "volume": 707755,
+        "vol_ma20": 408294,
+        "volume_spike": "True",
+        "close": 2662.3,
+        "vwap": 2832.17,
+        "below_vwap": "True",
+        "rsi": 38.9,
+        "rsi_ok": "True",
+        "sma20": 2821.32,
         "below_sma": "True"
       }
     }
@@ -2297,6 +2301,18 @@
       "qty": 8,
       "status": "CANCELLED",
       "note": "DAY expired unfilled"
+    },
+    {
+      "order_id": "5177782FFB",
+      "ts": "2026-09-03 18:17:33",
+      "ticker": "RRKABEL",
+      "side": "SELL",
+      "type": "MARKET",
+      "price": null,
+      "trigger": null,
+      "qty": 3,
+      "status": "FILLED",
+      "note": "time exit @ 2630.00"
     }
   ],
   "daily_pnl": {
@@ -2305,9 +2321,10 @@
     "2026-08-28": -139.19,
     "2026-08-31": -63.68,
     "2026-09-01": -275.92,
-    "2026-09-02": -128.81
+    "2026-09-02": -128.81,
+    "2026-09-03": -56.81
   },
-  "total_pnl": -13.323,
+  "total_pnl": -14.04,
   "wins": 4,
-  "losses": 12
+  "losses": 13
 }

@@ -50,3 +50,35 @@ Day Low 1152.4000244140625
 Entry 1355.37 | SL 1321.49
 T1 1371.63 | T2 1393.32
 RSI 37.2 | Range 4.14% | CP 0.203
+
+==================================================
+RUN 2026-09-03 18:16 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-09-03 18:16 IST [LIVE]_
+Scanned: 500 | Signals: 2
+Executed: 0 | Closed: 1
+P&L today: Rs *-57* | WinRate: 23.5%
+📋 Pending: DEEPAKFERT, OLECTRA, UBL
+
+PORTFOLIO SUMMARY
+Capital: Rs 198,908 (-0.55%)
+Total P&L: Rs -14
+Win/Loss: 4W / 13L (23.5% WR)
+Open Positions: 0
+
+RECENT CLOSED:
+  MARUTI TIME_EXIT | -0.22% net
+  JWL TIME_EXIT | -0.74% net
+  KEI STOP_LOSS | -2.80% net
+  POLYCAB TIME_EXIT | -0.53% net
+  RRKABEL TIME_EXIT | -0.72% net
+⏰ TIME_EXIT: RRKABEL
+@ 2630.0 | Net -0.72% (Rs -57)
+🔍 NEW SIGNAL: OLECTRA
+Entry 1234.84 | SL 1203.97
+T1 1249.66 | T2 1269.42
+RSI 33.8 | Range 4.01% | CP 0.097
+🔍 NEW SIGNAL: UBL
+Entry 1273.93 | SL 1242.08
+T1 1289.21 | T2 1309.6
+RSI 14.8 | Range 3.57% | CP 0.098
