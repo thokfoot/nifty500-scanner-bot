@@ -1,0 +1,52 @@
+
+==================================================
+RUN 2026-09-03 13:26 IST [LIVE]
+==================================================
+📊 *DAY SUMMARY* _2026-09-03 13:26 IST [LIVE]_
+Scanned: 500 | Signals: 1
+Executed: 1 | Closed: 0
+P&L today: Rs *+0* | WinRate: 25.0%
+🟢 Open: RRKABEL@2641.0
+📋 Pending: DEEPAKFERT
+
+PORTFOLIO SUMMARY
+Capital: Rs 198,964 (-0.52%)
+Total P&L: Rs -13
+Win/Loss: 4W / 12L (25.0% WR)
+Open Positions: 1
+
+OPEN POSITIONS:
+  RRKABEL @ Rs 2641.0 x3 | SL 2574.98 T1 2672.69 T2 2714.95
+
+RECENT CLOSED:
+  JAINREC TIME_EXIT | +1.03% net
+  MARUTI TIME_EXIT | -0.22% net
+  JWL TIME_EXIT | -0.74% net
+  KEI STOP_LOSS | -2.80% net
+  POLYCAB TIME_EXIT | -0.53% net
+❌ NO_FILL: EICHERMOT
+Entry 7512.91 gap-up open
+Day Low 7601.0
+❌ NO_FILL: HEROMOTOCO
+Entry 5190.64 gap-up open
+Day Low 5271.0
+📝 ORDER PLACED: RRKABEL
+BUY LIMIT 2641.0 x3 (Rs 10K)
+SL-M 2574.98 working
+_Pending fill on 2026-09-03_
+✅ FILLED: RRKABEL @ 2641.0 x3
+SL 2574.98 | T1 2672.69 T2 2714.95
+MIS | 2026-09-03
+❌ NO_FILL: AIIL
+Entry 503.39 gap-up open
+Day Low 508.6000061035156
+❌ NO_FILL: KEI
+Entry 5128.64 gap-up open
+Day Low 5173.5
+❌ NO_FILL: VOLTAS
+Entry 1142.88 not touched
+Day Low 1152.4000244140625
+🔍 NEW SIGNAL: DEEPAKFERT
+Entry 1355.37 | SL 1321.49
+T1 1371.63 | T2 1393.32
+RSI 37.2 | Range 4.14% | CP 0.203

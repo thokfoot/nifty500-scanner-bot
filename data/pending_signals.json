@@ -1,140 +1,25 @@
 {
   "pending": [
     {
-      "ticker": "EICHERMOT",
-      "signal_date": "2026-09-02",
-      "prev_close": 7573.5,
-      "entry_price": 7512.91,
-      "sl": 7325.09,
-      "t1": 7603.07,
-      "t2": 7723.27,
+      "ticker": "DEEPAKFERT",
+      "signal_date": "2026-09-03",
+      "prev_close": 1366.3,
+      "entry_price": 1355.37,
+      "sl": 1321.49,
+      "t1": 1371.63,
+      "t2": 1393.32,
       "details": {
-        "daily_range_pct": 5.13,
-        "close_position": 0.171,
-        "volume": 742456,
-        "vol_ma20": 389471,
+        "daily_range_pct": 4.14,
+        "close_position": 0.203,
+        "volume": 570713,
+        "vol_ma20": 267412,
         "volume_spike": "True",
-        "close": 7573.5,
-        "vwap": 7984.77,
+        "close": 1366.3,
+        "vwap": 1459.44,
         "below_vwap": "True",
-        "rsi": 20.2,
+        "rsi": 37.2,
         "rsi_ok": "True",
-        "sma20": 8004.1,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "HEROMOTOCO",
-      "signal_date": "2026-09-02",
-      "prev_close": 5232.5,
-      "entry_price": 5190.64,
-      "sl": 5060.87,
-      "t1": 5252.93,
-      "t2": 5335.98,
-      "details": {
-        "daily_range_pct": 6.15,
-        "close_position": 0.206,
-        "volume": 1263144,
-        "vol_ma20": 666689,
-        "volume_spike": "True",
-        "close": 5232.5,
-        "vwap": 5673.6,
-        "below_vwap": "True",
-        "rsi": 18.8,
-        "rsi_ok": "True",
-        "sma20": 5675.18,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "RRKABEL",
-      "signal_date": "2026-09-02",
-      "prev_close": 2662.3,
-      "entry_price": 2641.0,
-      "sl": 2574.98,
-      "t1": 2672.69,
-      "t2": 2714.95,
-      "details": {
-        "daily_range_pct": 8.1,
-        "close_position": 0.037,
-        "volume": 707755,
-        "vol_ma20": 408294,
-        "volume_spike": "True",
-        "close": 2662.3,
-        "vwap": 2832.17,
-        "below_vwap": "True",
-        "rsi": 38.9,
-        "rsi_ok": "True",
-        "sma20": 2821.32,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "AIIL",
-      "signal_date": "2026-09-02",
-      "prev_close": 507.45,
-      "entry_price": 503.39,
-      "sl": 490.81,
-      "t1": 509.43,
-      "t2": 517.49,
-      "details": {
-        "daily_range_pct": 7.17,
-        "close_position": 0.072,
-        "volume": 1026577,
-        "vol_ma20": 631231,
-        "volume_spike": "True",
-        "close": 507.45,
-        "vwap": 565.88,
-        "below_vwap": "True",
-        "rsi": 29.4,
-        "rsi_ok": "True",
-        "sma20": 559.08,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "KEI",
-      "signal_date": "2026-09-02",
-      "prev_close": 5170.0,
-      "entry_price": 5128.64,
-      "sl": 5000.42,
-      "t1": 5190.18,
-      "t2": 5272.24,
-      "details": {
-        "daily_range_pct": 3.96,
-        "close_position": 0.187,
-        "volume": 666046,
-        "vol_ma20": 355341,
-        "volume_spike": "True",
-        "close": 5170.0,
-        "vwap": 5584.94,
-        "below_vwap": "True",
-        "rsi": 30.2,
-        "rsi_ok": "True",
-        "sma20": 5613.79,
-        "below_sma": "True"
-      }
-    },
-    {
-      "ticker": "VOLTAS",
-      "signal_date": "2026-09-02",
-      "prev_close": 1152.1,
-      "entry_price": 1142.88,
-      "sl": 1114.31,
-      "t1": 1156.6,
-      "t2": 1174.88,
-      "details": {
-        "daily_range_pct": 4.25,
-        "close_position": 0.022,
-        "volume": 1979841,
-        "vol_ma20": 1085403,
-        "volume_spike": "True",
-        "close": 1152.1,
-        "vwap": 1253.28,
-        "below_vwap": "True",
-        "rsi": 24.4,
-        "rsi_ok": "True",
-        "sma20": 1243.82,
+        "sma20": 1463.73,
         "below_sma": "True"
       }
     }
@@ -531,6 +416,54 @@
       "exit_reason": "OPEN_POSITION",
       "net_pnl_pct": null,
       "executed_at": "2026-09-02 13:18:45"
+    },
+    {
+      "ticker": "EICHERMOT",
+      "signal_date": "2026-09-02",
+      "trade_date": "2026-09-03",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-09-03 13:27:22"
+    },
+    {
+      "ticker": "HEROMOTOCO",
+      "signal_date": "2026-09-02",
+      "trade_date": "2026-09-03",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-09-03 13:27:22"
+    },
+    {
+      "ticker": "RRKABEL",
+      "signal_date": "2026-09-02",
+      "trade_date": "2026-09-03",
+      "exit_reason": "OPEN_POSITION",
+      "net_pnl_pct": null,
+      "executed_at": "2026-09-03 13:27:22"
+    },
+    {
+      "ticker": "AIIL",
+      "signal_date": "2026-09-02",
+      "trade_date": "2026-09-03",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-09-03 13:27:22"
+    },
+    {
+      "ticker": "KEI",
+      "signal_date": "2026-09-02",
+      "trade_date": "2026-09-03",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-09-03 13:27:22"
+    },
+    {
+      "ticker": "VOLTAS",
+      "signal_date": "2026-09-02",
+      "trade_date": "2026-09-03",
+      "exit_reason": "no_fill",
+      "net_pnl_pct": null,
+      "executed_at": "2026-09-03 13:27:22"
     }
   ]
 }

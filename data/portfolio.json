@@ -1,7 +1,40 @@
 {
   "capital": 198964.38,
   "initial_capital": 200000.0,
-  "holdings": [],
+  "holdings": [
+    {
+      "ticker": "RRKABEL",
+      "signal_date": "2026-09-02",
+      "trade_date": "2026-09-03",
+      "entry_price": 2641.0,
+      "qty": 3,
+      "sl": 2574.98,
+      "sl_eff": 2574.98,
+      "t1": 2672.69,
+      "t2": 2714.95,
+      "half_booked": false,
+      "pnl_banked_pct": 0.0,
+      "entry_ts": "2026-09-03 09:15:00",
+      "last_candle_ts": "2026-09-03 13:15:00",
+      "day_low": 2605.800048828125,
+      "day_high": 2685.89990234375,
+      "status": "OPEN",
+      "details": {
+        "daily_range_pct": 8.1,
+        "close_position": 0.037,
+        "volume": 707755,
+        "vol_ma20": 408294,
+        "volume_spike": "True",
+        "close": 2662.3,
+        "vwap": 2832.17,
+        "below_vwap": "True",
+        "rsi": 38.9,
+        "rsi_ok": "True",
+        "sma20": 2821.32,
+        "below_sma": "True"
+      }
+    }
+  ],
   "closed_trades": [
     {
       "ticker": "HSCL",
@@ -2132,6 +2165,138 @@
       "qty": 1,
       "status": "FILLED",
       "note": "time exit @ 8804.00"
+    },
+    {
+      "order_id": "1A3146B0F0",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "EICHERMOT",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 7512.91,
+      "trigger": null,
+      "qty": 1,
+      "status": "REJECTED",
+      "note": "gap-up open 7730.00 > entry*1.015"
+    },
+    {
+      "order_id": "2BE077FE86",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "HEROMOTOCO",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 5190.64,
+      "trigger": null,
+      "qty": 1,
+      "status": "REJECTED",
+      "note": "gap-up open 5305.00 > entry*1.015"
+    },
+    {
+      "order_id": "E29D82D20B",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "RRKABEL",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 2641.0,
+      "trigger": null,
+      "qty": 3,
+      "status": "PLACED",
+      "note": "ENTRY MIS DAY"
+    },
+    {
+      "order_id": "E29D82D20B",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "RRKABEL",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 2641.0,
+      "trigger": null,
+      "qty": 3,
+      "status": "FILLED",
+      "note": "@ 2026-09-03 09:15:00"
+    },
+    {
+      "order_id": "87AB8338F9",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "RRKABEL",
+      "side": "SELL",
+      "type": "SL-M",
+      "price": null,
+      "trigger": 2574.98,
+      "qty": 3,
+      "status": "PLACED",
+      "note": "protective SL"
+    },
+    {
+      "order_id": "9343FDE8A8",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "RRKABEL",
+      "side": "SELL",
+      "type": "LIMIT",
+      "price": 2672.69,
+      "trigger": null,
+      "qty": 1,
+      "status": "PLACED",
+      "note": "T1 50%"
+    },
+    {
+      "order_id": "B077402123",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "RRKABEL",
+      "side": "SELL",
+      "type": "LIMIT",
+      "price": 2714.95,
+      "trigger": null,
+      "qty": 2,
+      "status": "PLACED",
+      "note": "T2 rest"
+    },
+    {
+      "order_id": "6613DC2270",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "AIIL",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 503.39,
+      "trigger": null,
+      "qty": 19,
+      "status": "REJECTED",
+      "note": "gap-up open 515.00 > entry*1.015"
+    },
+    {
+      "order_id": "C05103847F",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "KEI",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 5128.64,
+      "trigger": null,
+      "qty": 1,
+      "status": "REJECTED",
+      "note": "gap-up open 5223.50 > entry*1.015"
+    },
+    {
+      "order_id": "179069A6FE",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "VOLTAS",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 1142.88,
+      "trigger": null,
+      "qty": 8,
+      "status": "PLACED",
+      "note": "ENTRY MIS DAY"
+    },
+    {
+      "order_id": "179069A6FE",
+      "ts": "2026-09-03 13:27:22",
+      "ticker": "VOLTAS",
+      "side": "BUY",
+      "type": "LIMIT",
+      "price": 1142.88,
+      "trigger": null,
+      "qty": 8,
+      "status": "CANCELLED",
+      "note": "DAY expired unfilled"
     }
   ],
   "daily_pnl": {
