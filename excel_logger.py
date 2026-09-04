@@ -8,7 +8,7 @@ import pandas as pd
 import openpyxl
 import pytz
 
-from config import EXCEL_FILE, CURRENCY
+from config import EXCEL_FILE, MASTER_EXCEL_FILE, CURRENCY
 
 IST = pytz.timezone("Asia/Kolkata")
 
@@ -62,7 +62,10 @@ def append_to_sheet(sheet_name: str, rows_list: list):
     try:
         existing = pd.read_excel(EXCEL_FILE, sheet_name=sheet_name)
         new_df = pd.DataFrame(rows_list)
-        combined = pd.concat([existing, new_df], ignore_index=True)
+        if existing.empty:
+            combined = new_df
+        else:
+            combined = pd.concat([existing.dropna(how="all"), new_df.dropna(how="all")], ignore_index=True)
     except Exception:
         combined = pd.DataFrame(rows_list)
 
@@ -197,4 +200,11 @@ def write_full_audit(scan_results: list, signals: list, portfolio: dict):
         "Open_Positions": len(portfolio.get("positions", {}))
     }]
     append_to_sheet("Portfolio", portfolio_row)
+    import shutil
+    try:
+        if os.path.abspath(EXCEL_FILE) != os.path.abspath(MASTER_EXCEL_FILE):
+            shutil.copy2(EXCEL_FILE, MASTER_EXCEL_FILE)
+    except Exception:
+        pass
     print(f"[EXCEL] Audit log successfully updated ({EXCEL_FILE})")
+

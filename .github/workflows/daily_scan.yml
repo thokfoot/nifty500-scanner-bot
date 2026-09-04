@@ -1,16 +1,28 @@
-name: Daily Nifty 500 Scan + Portfolio
+name: Volatility Expansion Bot - Automated Run
 
 on:
   schedule:
-    # Every 15 min, 03:00-10:59 UTC = 08:30-16:29 IST (pre-open to post-close)
-    - cron: '*/15 3-10 * * 1-5'
+    # 1. Indian Market Close: 10:15 UTC = 15:45 IST (Mon-Fri)
+    - cron: '15 10 * * 1-5'
+    # 2. US Market Close: 21:00 UTC = 17:00 EDT (Mon-Fri)
+    - cron: '0 21 * * 1-5'
   workflow_dispatch:
+    inputs:
+      market:
+        description: 'Select Market Universe'
+        required: true
+        default: 'US'
+        type: choice
+        options:
+          - US
+          - INDIA
+          - BOTH
 
 permissions:
   contents: write
 
 concurrency:
-  group: nifty500-scan
+  group: bot-run
   cancel-in-progress: false
 
 jobs:
@@ -30,17 +42,38 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run bot (LIVE broker mode)
+      - name: Run bot (Automated Trading & Audit)
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          INPUT_MARKET: ${{ github.event.inputs.market }}
         run: |
-          EXECUTE_NOW=1 LIVE_MODE=1 python main.py
+          HOUR=$(date -u +%H)
+          if [ -n "$INPUT_MARKET" ]; then
+            SELECTED="$INPUT_MARKET"
+          elif [ "$HOUR" -ge 18 ] || [ "$HOUR" -le 2 ]; then
+            SELECTED="US"
+          else
+            SELECTED="INDIA"
+          fi
+
+          echo "=============================================="
+          echo "Determined Market Mode: $SELECTED (UTC Hour: $HOUR)"
+          echo "=============================================="
+
+          if [ "$SELECTED" = "BOTH" ]; then
+            echo ">> Running INDIA market scan..."
+            MARKET_MODE=INDIA python main.py
+            echo ">> Running US market scan..."
+            MARKET_MODE=US python main.py
+          else
+            MARKET_MODE=$SELECTED python main.py
+          fi
 
       - name: Commit state back to repo
         run: |
-          git config user.name "bot"
-          git config user.email "bot@nifty500"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/ logs/ -f
           if git diff --cached --quiet; then
             echo "No state changes to commit"
@@ -49,3 +82,4 @@ jobs:
             git pull --rebase origin main
             git push
           fi
+

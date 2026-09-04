@@ -49,9 +49,11 @@ MAX_WORKERS = 8
 # ── File Paths & State Tracking ──
 DATA_DIR = "data"
 LOG_DIR = "logs"
-PORTFOLIO_FILE = os.path.join(DATA_DIR, "portfolio.json")
-PENDING_FILE = os.path.join(DATA_DIR, "pending_signals.json")
-EXCEL_FILE = os.path.join(DATA_DIR, "trade_log.xlsx")
+PORTFOLIO_FILE = os.path.join(DATA_DIR, f"portfolio_{MARKET_MODE.lower()}.json")
+PENDING_FILE = os.path.join(DATA_DIR, f"pending_signals_{MARKET_MODE.lower()}.json")
+EXCEL_FILE = os.path.join(DATA_DIR, f"trade_log_{MARKET_MODE.lower()}.xlsx")
+MASTER_EXCEL_FILE = os.path.join(DATA_DIR, "trade_log.xlsx")
+
 
 # ── Telegram Credentials ──
 TG_TOKEN = os.getenv("TELEGRAM_TOKEN") or os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN")

@@ -28,7 +28,7 @@ def _send(method: str, payload: dict, files: dict = None) -> bool:
 
 
 def send_message(text: str) -> bool:
-    ok = _send("sendMessage", {"text": text[:4000], "parse_mode": "Markdown",
+    ok = _send("sendMessage", {"text": text[:4000], "parse_mode": "HTML",
                                "disable_web_page_preview": True})
     if ok:
         print(f"[TG] Sent message OK ({len(text)} chars)")
@@ -41,7 +41,7 @@ def send_document(file_path: str, caption: str = "") -> bool:
     with open(file_path, "rb") as f:
         files = {"document": (os.path.basename(file_path), f,
                               "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
-        ok = _send("sendDocument", {"caption": caption[:1000]}, files=files)
+        ok = _send("sendDocument", {"caption": caption[:1000], "parse_mode": "HTML"}, files=files)
     if ok:
         print(f"[TG] Audit Document delivered: {os.path.basename(file_path)}")
     return ok
@@ -49,11 +49,11 @@ def send_document(file_path: str, caption: str = "") -> bool:
 
 def fmt_entry(pos: dict) -> str:
     return (
-        f"🚀 *NEW BREAKOUT ENTRY*\n"
-        f"Ticker: `{pos['ticker']}`\n"
-        f"Entry Price: `{CURRENCY}{pos['entry_price']:.2f}`\n"
-        f"Hard Stop Loss: `{CURRENCY}{pos['current_sl']:.2f}` (-4.5%)\n"
-        f"Qty: `{pos['qty']}` | Invested: `{CURRENCY}{pos['invested']:.2f}`\n"
+        f"🚀 <b>NEW BREAKOUT ENTRY</b>\n"
+        f"Ticker: <code>{pos['ticker']}</code>\n"
+        f"Entry Price: <code>{CURRENCY}{pos['entry_price']:.2f}</code>\n"
+        f"Hard Stop Loss: <code>{CURRENCY}{pos['current_sl']:.2f}</code> (-4.5%)\n"
+        f"Qty: <code>{pos['qty']}</code> | Invested: <code>{CURRENCY}{pos['invested']:.2f}</code>\n"
         f"Strategy: Bollinger Band Breakout + EMA Trend-Ride"
     )
 
@@ -61,23 +61,24 @@ def fmt_entry(pos: dict) -> str:
 def fmt_exit(trade: dict) -> str:
     emoji = "🟢" if trade["net_pnl_pct"] > 0 else "🔴"
     return (
-        f"{emoji} *TRADE CLOSED ({trade['exit_reason']})*\n"
-        f"Ticker: `{trade['ticker']}`\n"
-        f"Entry: `{CURRENCY}{trade['entry_price']:.2f}` -> Exit: `{CURRENCY}{trade['exit_price']:.2f}`\n"
-        f"Net P&L: *{trade['net_pnl_pct']:+.2f}%* ({CURRENCY}{trade['pnl_amount']:+.2f})\n"
-        f"Holding Duration: `{trade['days_held']}` days"
+        f"{emoji} <b>TRADE CLOSED ({trade['exit_reason']})</b>\n"
+        f"Ticker: <code>{trade['ticker']}</code>\n"
+        f"Entry: <code>{CURRENCY}{trade['entry_price']:.2f}</code> -&gt; Exit: <code>{CURRENCY}{trade['exit_price']:.2f}</code>\n"
+        f"Net P&amp;L: <b>{trade['net_pnl_pct']:+.2f}%</b> ({CURRENCY}{trade['pnl_amount']:+.2f})\n"
+        f"Holding Duration: <code>{trade['days_held']}</code> days"
     )
 
 
 def fmt_summary(scanned_count: int, signals_found: int, open_count: int,
                 closed_count: int, cash: float, realized_pnl: float) -> str:
     return (
-        f"📊 *RUN SUMMARY - AUDIT STATUS*\n"
-        f"Stocks Scanned: `{scanned_count}`\n"
-        f"Breakouts Found: `{signals_found}`\n"
-        f"Active Positions: `{open_count}`\n"
-        f"Trades Closed Today: `{closed_count}`\n"
-        f"Cash Available: `{CURRENCY}{cash:,.2f}`\n"
-        f"Total Realized P&L: `{CURRENCY}{realized_pnl:+,.2f}`\n"
-        f"📁 _Attached: Detailed 7-sheet trade_log.xlsx_"
+        f"📊 <b>RUN SUMMARY - AUDIT STATUS</b>\n"
+        f"Stocks Scanned: <code>{scanned_count}</code>\n"
+        f"Breakouts Found: <code>{signals_found}</code>\n"
+        f"Active Positions: <code>{open_count}</code>\n"
+        f"Trades Closed Today: <code>{closed_count}</code>\n"
+        f"Cash Available: <code>{CURRENCY}{cash:,.2f}</code>\n"
+        f"Total Realized P&amp;L: <code>{CURRENCY}{realized_pnl:+,.2f}</code>\n"
+        f"📁 <i>Attached: Detailed 7-sheet trade_log.xlsx</i>"
     )
+
