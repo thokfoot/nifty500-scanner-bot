@@ -1,22 +1,23 @@
 {
-  "capital": 8032.51,
+  "capital": 9828.720000000001,
   "initial_capital": 10000.0,
-  "invested": 1881.85,
-  "positions": {
-    "TSLA": {
+  "invested": 0.0,
+  "positions": {},
+  "closed_trades": [
+    {
       "ticker": "TSLA",
       "entry_date": "2026-09-04",
+      "exit_date": "2026-09-04",
       "entry_price": 376.37,
+      "exit_price": 359.43,
       "qty": 5,
       "invested": 1881.85,
-      "current_sl": 359.43,
-      "highest_high": 384.0400085449219,
-      "days_held": 1,
-      "last_price": 376.37,
-      "unrealized_pnl_pct": -0.0
-    }
-  },
-  "closed_trades": [
+      "pnl_amount": -85.64,
+      "gross_pnl_pct": -4.501,
+      "net_pnl_pct": -4.551,
+      "exit_reason": "HARD_STOP_LOSS",
+      "days_held": 2
+    },
     {
       "ticker": "TSLA",
       "entry_date": "2026-09-04",
@@ -58,6 +59,19 @@
       "Qty": 5,
       "Status": "FILLED",
       "Note": "Entry Breakout"
+    },
+    {
+      "Timestamp": "2026-09-04 10:52:56",
+      "Order_ID": "44F68F0F13",
+      "Ticker": "TSLA",
+      "Side": "SELL",
+      "Type": "MARKET",
+      "Expected_Price": 359.43,
+      "Fill_Price": 359.43,
+      "Slippage": 0.0,
+      "Qty": 5,
+      "Status": "FILLED",
+      "Note": "HARD_STOP_LOSS"
     }
   ],
   "discrepancies": [
@@ -69,5 +83,5 @@
       "Details": "No bar data available for today 2026-09-04"
     }
   ],
-  "last_updated": "2026-09-04 10:51:55"
+  "last_updated": "2026-09-04 10:52:57"
 }
