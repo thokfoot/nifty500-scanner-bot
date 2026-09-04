@@ -1,5 +1,5 @@
 {
-  "capital": 198907.57,
+  "capital": 197025.72,
   "initial_capital": 200000.0,
   "holdings": [],
   "closed_trades": [
@@ -2313,6 +2313,19 @@
       "qty": 3,
       "status": "FILLED",
       "note": "time exit @ 2630.00"
+    },
+    {
+      "order_id": "5EF2123F08",
+      "timestamp": "2026-09-04 08:12:09",
+      "ticker": "TSLA",
+      "side": "BUY",
+      "type": "MARKET",
+      "expected_price": 376.37,
+      "fill_price": 376.37,
+      "slippage": 0.0,
+      "qty": 5,
+      "status": "FILLED",
+      "note": "Entry Breakout"
     }
   ],
   "daily_pnl": {
@@ -2326,5 +2339,37 @@
   },
   "total_pnl": -14.04,
   "wins": 4,
-  "losses": 13
+  "losses": 13,
+  "invested": 1881.85,
+  "positions": {
+    "TSLA": {
+      "ticker": "TSLA",
+      "entry_date": "2026-09-04",
+      "entry_price": 376.37,
+      "qty": 5,
+      "invested": 1881.85,
+      "current_sl": 359.43,
+      "highest_high": 384.0400085449219,
+      "days_held": 1,
+      "last_price": 376.37,
+      "unrealized_pnl_pct": -0.0
+    }
+  },
+  "discrepancies": [
+    {
+      "timestamp": "2026-09-04 08:12:51",
+      "category": "DATA_MISSING",
+      "ticker": "TSLA",
+      "severity": "WARNING",
+      "details": "No bar data available for today 2026-09-04"
+    },
+    {
+      "Timestamp": "2026-09-04 08:13:24",
+      "Category": "DATA_MISSING",
+      "Ticker": "TSLA",
+      "Severity": "WARNING",
+      "Details": "No bar data available for today 2026-09-04"
+    }
+  ],
+  "last_updated": "2026-09-04 08:13:24"
 }

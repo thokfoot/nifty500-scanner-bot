@@ -1,302 +1,200 @@
 """
-Excel Logger - comprehensive logging for scans, signals, trades, errors
-Creates/updates a multi-sheet Excel file after each run.
+Enhanced Multi-Sheet Excel Auditor & Mistake-Tracker
+Generates data/trade_log.xlsx with 7 dedicated tabs for forensic tracking of every decision.
 """
-import os, traceback
+import os
 from datetime import datetime
 import pandas as pd
 import openpyxl
 import pytz
 
+from config import EXCEL_FILE, CURRENCY
+
 IST = pytz.timezone("Asia/Kolkata")
-EXCEL_FILE = "data/trade_log.xlsx"
 
-SCAN_COLS = [
-    "Date", "Time", "Stocks_Scanned", "Daily_Ok", "Intraday_Ok",
-    "Signals_Found", "Tradeable", "Watchlist", "Entered", "Closed", "Errors", "Duration_Sec"
-]
-SIGNAL_COLS = [
-    "Date", "Time", "Ticker", "Signal_Date", "Type",
-    "Prev_Close", "Entry_Price", "SL", "T1", "T2",
-    "Range_Pct", "Close_Pos", "RSI", "SMA20", "Volume_Spike", "Below_VWAP"
-]
-TRADE_COLS = [
-    "Entry_Date", "Exit_Date", "Ticker", "Entry_Price", "Qty",
-    "SL", "T1", "T2", "Exit_Price", "Exit_Reason",
-    "Gross_PnL_Pct", "Net_PnL_Pct", "Investment", "PnL_Amount", "Status"
-]
-ERROR_COLS = ["Date", "Time", "Context", "Error", "Traceback"]
-ORDER_COLS = [
-    "Date", "Time", "Order_ID", "Ticker", "Side", "Type",
-    "Price", "Trigger", "Qty", "Status", "Note"
-]
-PORTFOLIO_COLS = [
-    "Date", "Time", "Capital", "Invested", "Available", "Unrealized_PnL",
-    "Realized_PnL", "Total_PnL", "Win_Rate", "Total_Trades", "Open_Positions"
-]
-
-ALL_SHEETS = {
-    "Scans": SCAN_COLS,
-    "Signals": SIGNAL_COLS,
-    "Trades": TRADE_COLS,
-    "Orders": ORDER_COLS,
-    "Errors": ERROR_COLS,
-    "Portfolio": PORTFOLIO_COLS,
+SHEET_SCHEMAS = {
+    "Scans": [
+        "Date", "Time", "Ticker", "Close", "SMA20", "Upper_Band",
+        "EMA9", "EMA21", "Vol_Ratio", "Qualifies", "Rejection_Or_Status"
+    ],
+    "Signals": [
+        "Date", "Time", "Ticker", "Signal_Price", "Initial_SL",
+        "Vol_Ratio", "Status"
+    ],
+    "Active_Holdings": [
+        "Ticker", "Entry_Date", "Entry_Price", "Qty", "Invested",
+        "Current_Price", "Unrealized_PnL_Pct", "Hard_SL", "Highest_High",
+        "Days_Held", "Status"
+    ],
+    "Trades": [
+        "Entry_Date", "Exit_Date", "Ticker", "Entry_Price", "Exit_Price",
+        "Qty", "Invested", "Gross_PnL_Pct", "Net_PnL_Pct", "PnL_Amount",
+        "Exit_Reason", "Days_Held", "Status"
+    ],
+    "Orders": [
+        "Timestamp", "Order_ID", "Ticker", "Side", "Type",
+        "Expected_Price", "Fill_Price", "Slippage", "Qty", "Status", "Note"
+    ],
+    "Discrepancies": [
+        "Timestamp", "Category", "Ticker", "Severity", "Details"
+    ],
+    "Portfolio": [
+        "Date", "Time", "Cash_Available", "Invested_Capital", "Total_Equity",
+        "Realized_PnL", "Win_Rate_Pct", "Total_Trades", "Open_Positions"
+    ]
 }
 
 
-def _ensure_excel():
-    """Create Excel with all sheets; add any missing sheets to existing files."""
+def ensure_excel():
     os.makedirs(os.path.dirname(EXCEL_FILE), exist_ok=True)
     if not os.path.exists(EXCEL_FILE):
-        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl") as xf:
-            for sheet_name, cols in ALL_SHEETS.items():
-                pd.DataFrame(columns=cols).to_excel(xf, sheet_name=sheet_name, index=False)
-        print(f"[LOG] Created {EXCEL_FILE}")
+        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl") as writer:
+            for sname, cols in SHEET_SCHEMAS.items():
+                pd.DataFrame(columns=cols).to_excel(writer, sheet_name=sname, index=False)
+        print(f"[EXCEL] Created audit workbook: {EXCEL_FILE}")
+
+
+def append_to_sheet(sheet_name: str, rows_list: list):
+    """Appends records to specified sheet while preserving history."""
+    if not rows_list:
         return
-    # existing file: create any sheet added later (e.g. Orders)
+    ensure_excel()
     try:
-        book = openpyxl.load_workbook(EXCEL_FILE)
-        missing = [s for s in ALL_SHEETS if s not in book.sheetnames]
-        if missing:
-            with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a") as xf:
-                for s in missing:
-                    pd.DataFrame(columns=ALL_SHEETS[s]).to_excel(xf, sheet_name=s, index=False)
-            print(f"[LOG] Added sheets: {missing}")
-    except Exception as e:
-        print(f"[LOG] Sheet ensure error: {e}")
+        existing = pd.read_excel(EXCEL_FILE, sheet_name=sheet_name)
+        new_df = pd.DataFrame(rows_list)
+        combined = pd.concat([existing, new_df], ignore_index=True)
+    except Exception:
+        combined = pd.DataFrame(rows_list)
+
+    with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+        combined.to_excel(writer, sheet_name=sheet_name, index=False)
 
 
-def _load_sheet(xf, sheet_name, cols):
-    """Load existing sheet or create empty DataFrame."""
-    try:
-        xf_book = xf.book
-        if sheet_name in xf_book.sheetnames:
-            return pd.read_excel(EXCEL_FILE, sheet_name=sheet_name)
-    except:
-        pass
-    return pd.DataFrame(columns=cols)
+def overwrite_sheet(sheet_name: str, rows_list: list):
+    """Overwrites dynamic state sheets (like Active_Holdings, Orders, Discrepancies)."""
+    ensure_excel()
+    target_cols = SHEET_SCHEMAS[sheet_name]
+    if rows_list:
+        # Standardize keys
+        standardized_rows = []
+        for r in rows_list:
+            row_dict = {}
+            for col in target_cols:
+                # search case-insensitively
+                val = next((v for k, v in r.items() if k.lower() == col.lower()), None)
+                row_dict[col] = val
+            standardized_rows.append(row_dict)
+        df = pd.DataFrame(standardized_rows, columns=target_cols)
+    else:
+        df = pd.DataFrame(columns=target_cols)
+
+    with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+        df.to_excel(writer, sheet_name=sheet_name, index=False)
 
 
-def _append_row(df, row_dict):
-    """Append a row to DataFrame."""
-    new_row = pd.DataFrame([row_dict])
-    return pd.concat([df, new_row], ignore_index=True)
-
-
-def log_scan(stocks_scanned, daily_ok, intraday_ok, signals_found,
-             tradeable, watchlist, entered, closed, errors, duration):
-    """Log a scan run."""
+def write_full_audit(scan_results: list, signals: list, portfolio: dict):
+    """Writes the full comprehensive audit log after a bot run."""
+    ensure_excel()
     now = datetime.now(IST)
-    _ensure_excel()
+    d_str = now.strftime("%Y-%m-%d")
+    t_str = now.strftime("%H:%M:%S")
 
-    row = {
-        "Date": now.strftime("%Y-%m-%d"),
-        "Time": now.strftime("%H:%M:%S"),
-        "Stocks_Scanned": stocks_scanned,
-        "Daily_Ok": daily_ok,
-        "Intraday_Ok": intraday_ok,
-        "Signals_Found": signals_found,
-        "Tradeable": tradeable,
-        "Watchlist": watchlist,
-        "Entered": entered,
-        "Closed": closed,
-        "Errors": errors,
-        "Duration_Sec": round(duration, 1),
-    }
-
-    try:
-        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="overlay") as xf:
-            df = _load_sheet(xf, "Scans", SCAN_COLS)
-            df = _append_row(df, row)
-            df.to_excel(xf, sheet_name="Scans", index=False)
-        print(f"[LOG] Scan logged")
-    except Exception as e:
-        print(f"[LOG] Scan log error: {e}")
-
-
-def log_signals(signals, signal_type="WATCHLIST"):
-    """Log signals found."""
-    if not signals:
-        return
-    now = datetime.now(IST)
-    _ensure_excel()
-
-    rows = []
-    for s in signals:
-        d = s.get("details", {})
-        rows.append({
-            "Date": now.strftime("%Y-%m-%d"),
-            "Time": now.strftime("%H:%M:%S"),
-            "Ticker": s["ticker"],
-            "Signal_Date": s.get("signal_date", ""),
-            "Type": signal_type,
-            "Prev_Close": s.get("prev_close", ""),
-            "Entry_Price": s.get("entry_price", ""),
-            "SL": s.get("sl", ""),
-            "T1": s.get("t1", ""),
-            "T2": s.get("t2", ""),
-            "Range_Pct": d.get("daily_range_pct", ""),
-            "Close_Pos": d.get("close_position", ""),
-            "RSI": d.get("rsi", ""),
-            "SMA20": d.get("sma20", ""),
-            "Volume_Spike": d.get("volume_spike", ""),
-            "Below_VWAP": d.get("below_vwap", ""),
+    # 1. Scans Sheet
+    scan_rows = []
+    for s in scan_results:
+        m = s.get("metrics", {})
+        scan_rows.append({
+            "Date": d_str,
+            "Time": t_str,
+            "Ticker": s.get("ticker"),
+            "Close": m.get("close"),
+            "SMA20": m.get("upper_band"),
+            "Upper_Band": m.get("upper_band"),
+            "EMA9": m.get("ema9"),
+            "EMA21": m.get("ema21"),
+            "Vol_Ratio": m.get("vol_ratio"),
+            "Qualifies": s.get("qualifies"),
+            "Rejection_Or_Status": s.get("reason")
         })
+    append_to_sheet("Scans", scan_rows)
 
-    try:
-        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="overlay") as xf:
-            df = _load_sheet(xf, "Signals", SIGNAL_COLS)
-            for row in rows:
-                df = _append_row(df, row)
-            df.to_excel(xf, sheet_name="Signals", index=False)
-        print(f"[LOG] {len(rows)} signals logged ({signal_type})")
-    except Exception as e:
-        print(f"[LOG] Signal log error: {e}")
+    # 2. Signals Sheet
+    sig_rows = []
+    for sig in signals:
+        sig_rows.append({
+            "Date": d_str,
+            "Time": t_str,
+            "Ticker": sig.get("ticker"),
+            "Signal_Price": sig.get("close"),
+            "Initial_SL": sig.get("initial_sl"),
+            "Vol_Ratio": sig.get("vol_ratio"),
+            "Status": "QUEUED"
+        })
+    append_to_sheet("Signals", sig_rows)
 
+    # 3. Active Holdings Sheet (Current State Snapshot)
+    holdings_rows = []
+    for t, pos in portfolio.get("positions", {}).items():
+        holdings_rows.append({
+            "Ticker": t,
+            "Entry_Date": pos.get("entry_date"),
+            "Entry_Price": pos.get("entry_price"),
+            "Qty": pos.get("qty"),
+            "Invested": pos.get("invested"),
+            "Current_Price": pos.get("last_price"),
+            "Unrealized_PnL_Pct": pos.get("unrealized_pnl_pct"),
+            "Hard_SL": pos.get("current_sl"),
+            "Highest_High": pos.get("highest_high"),
+            "Days_Held": pos.get("days_held"),
+            "Status": "OPEN"
+        })
+    overwrite_sheet("Active_Holdings", holdings_rows)
 
-def log_trade(trade, status="CLOSED"):
-    """Log a trade (entry or exit)."""
-    now = datetime.now(IST)
-    _ensure_excel()
+    # 4. Trades Sheet (Closed Trades History)
+    trade_rows = []
+    for tr in portfolio.get("closed_trades", []):
+        trade_rows.append({
+            "Entry_Date": tr.get("entry_date"),
+            "Exit_Date": tr.get("exit_date"),
+            "Ticker": tr.get("ticker"),
+            "Entry_Price": tr.get("entry_price"),
+            "Exit_Price": tr.get("exit_price"),
+            "Qty": tr.get("qty"),
+            "Invested": tr.get("invested"),
+            "Gross_PnL_Pct": tr.get("gross_pnl_pct"),
+            "Net_PnL_Pct": tr.get("net_pnl_pct"),
+            "PnL_Amount": tr.get("pnl_amount"),
+            "Exit_Reason": tr.get("exit_reason"),
+            "Days_Held": tr.get("days_held"),
+            "Status": "CLOSED"
+        })
+    overwrite_sheet("Trades", trade_rows)
 
-    entry_price = trade.get("entry_price", 0)
-    qty = trade.get("qty", 0)
-    investment = entry_price * qty
-    gross_pnl_pct = trade.get("gross_pnl_pct", trade.get("pnl", 0))
-    net_pnl_pct = trade.get("net_pnl_pct", trade.get("pnl", 0))
-    pnl_amount = round(investment * net_pnl_pct / 100.0, 2)
+    # 5. Orders Sheet
+    overwrite_sheet("Orders", portfolio.get("orders", []))
 
-    row = {
-        "Entry_Date": trade.get("entry_date", now.strftime("%Y-%m-%d")),
-        "Exit_Date": trade.get("exit_date", ""),
-        "Ticker": trade.get("ticker", ""),
-        "Entry_Price": entry_price,
-        "Qty": qty,
-        "SL": trade.get("sl", ""),
-        "T1": trade.get("t1", ""),
-        "T2": trade.get("t2", ""),
-        "Exit_Price": trade.get("exit_price", ""),
-        "Exit_Reason": trade.get("exit_reason", trade.get("result", "")),
-        "Gross_PnL_Pct": gross_pnl_pct,
-        "Net_PnL_Pct": net_pnl_pct,
-        "Investment": round(investment, 2),
-        "PnL_Amount": pnl_amount,
-        "Status": status,
-    }
+    # 6. Discrepancies (Mistake Catcher)
+    overwrite_sheet("Discrepancies", portfolio.get("discrepancies", []))
 
-    try:
-        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="overlay") as xf:
-            df = _load_sheet(xf, "Trades", TRADE_COLS)
-            df = _append_row(df, row)
-            df.to_excel(xf, sheet_name="Trades", index=False)
-        print(f"[LOG] Trade logged: {trade.get('ticker','')} {status}")
-    except Exception as e:
-        print(f"[LOG] Trade log error: {e}")
+    # 7. Portfolio Summary
+    cash = portfolio.get("capital", 0.0)
+    invested = portfolio.get("invested", 0.0)
+    closed = portfolio.get("closed_trades", [])
+    total_trades = len(closed)
+    wins = sum(1 for tr in closed if tr.get("pnl_amount", 0) > 0)
+    win_rate = round(wins / total_trades * 100.0, 1) if total_trades > 0 else 0.0
+    realized_pnl = round(sum(tr.get("pnl_amount", 0) for tr in closed), 2)
 
-
-def log_order(order):
-    """Log a broker order event (PLACED/FILLED/CANCELLED/REJECTED)."""
-    now = datetime.now(IST)
-    _ensure_excel()
-
-    row = {
-        "Date": now.strftime("%Y-%m-%d"),
-        "Time": now.strftime("%H:%M:%S"),
-        "Order_ID": order.get("order_id", ""),
-        "Ticker": order.get("ticker", ""),
-        "Side": order.get("side", ""),
-        "Type": order.get("type", ""),
-        "Price": order.get("price", ""),
-        "Trigger": order.get("trigger", ""),
-        "Qty": order.get("qty", ""),
-        "Status": order.get("status", ""),
-        "Note": str(order.get("note", ""))[:200],
-    }
-
-    try:
-        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="overlay") as xf:
-            df = _load_sheet(xf, "Orders", ORDER_COLS)
-            df = _append_row(df, row)
-            df.to_excel(xf, sheet_name="Orders", index=False)
-    except Exception as e:
-        print(f"[LOG] Order log error: {e}")
-
-
-def log_orders(orders):
-    """Log a batch of order events."""
-    for o in orders:
-        log_order(o)
-
-
-def log_error(context, error, tb_str=None):
-    """Log an error."""
-    now = datetime.now(IST)
-    _ensure_excel()
-
-    row = {
-        "Date": now.strftime("%Y-%m-%d"),
-        "Time": now.strftime("%H:%M:%S"),
-        "Context": context,
-        "Error": str(error)[:500],
-        "Traceback": (tb_str or "")[:1000],
-    }
-
-    try:
-        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="overlay") as xf:
-            df = _load_sheet(xf, "Errors", ERROR_COLS)
-            df = _append_row(df, row)
-            df.to_excel(xf, sheet_name="Errors", index=False)
-        print(f"[LOG] Error logged: {context}")
-    except Exception as e:
-        print(f"[LOG] Error log itself failed: {e}")
-
-
-def log_portfolio(portfolio):
-    """Log portfolio snapshot."""
-    now = datetime.now(IST)
-    _ensure_excel()
-
-    capital = portfolio.get("capital", 0)
-    open_pos = [p for p in portfolio.get("holdings", portfolio.get("open_positions", []))
-                if p.get("status") == "OPEN"]
-    invested = sum(p.get("entry_price", 0) * p.get("qty", 0) for p in open_pos)
-    available = capital - invested
-    realized = portfolio.get("total_pnl", 0)
-    wins = portfolio.get("wins", 0)
-    losses = portfolio.get("losses", 0)
-    total = wins + losses
-    wr = round(wins / total * 100, 1) if total > 0 else 0
-
-    row = {
-        "Date": now.strftime("%Y-%m-%d"),
-        "Time": now.strftime("%H:%M:%S"),
-        "Capital": round(capital, 2),
-        "Invested": round(invested, 2),
-        "Available": round(available, 2),
-        "Unrealized_PnL": 0,
-        "Realized_PnL": round(realized, 2),
-        "Total_PnL": round(realized, 2),
-        "Win_Rate": wr,
-        "Total_Trades": total,
-        "Open_Positions": len(open_pos),
-    }
-
-    try:
-        with pd.ExcelWriter(EXCEL_FILE, engine="openpyxl", mode="a", if_sheet_exists="overlay") as xf:
-            df = _load_sheet(xf, "Portfolio", PORTFOLIO_COLS)
-            df = _append_row(df, row)
-            df.to_excel(xf, sheet_name="Portfolio", index=False)
-        print(f"[LOG] Portfolio snapshot logged")
-    except Exception as e:
-        print(f"[LOG] Portfolio log error: {e}")
-
-
-def get_excel_path():
-    """Return the Excel file path."""
-    return EXCEL_FILE
-
-
-def get_excel_exists():
-    """Check if Excel file exists."""
-    return os.path.exists(EXCEL_FILE)
+    portfolio_row = [{
+        "Date": d_str,
+        "Time": t_str,
+        "Cash_Available": round(cash, 2),
+        "Invested_Capital": round(invested, 2),
+        "Total_Equity": round(cash + invested, 2),
+        "Realized_PnL": realized_pnl,
+        "Win_Rate_Pct": win_rate,
+        "Total_Trades": total_trades,
+        "Open_Positions": len(portfolio.get("positions", {}))
+    }]
+    append_to_sheet("Portfolio", portfolio_row)
+    print(f"[EXCEL] Audit log successfully updated ({EXCEL_FILE})")

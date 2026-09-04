@@ -1,45 +1,58 @@
 """
-Nifty 500 Volatile Down-Close Paper Trading Bot
-Config: all settings in one place
+Production Configuration for Volatility Expansion & Trend-Ride Bot
+Supports US Mega-Cap / Tech Leaders and Indian Momentum Stocks.
 """
 import os
 
-# ── Strategy Parameters (v5 best from grid search) ──
-RANGE_PCT = 3.5          # Min daily range %
-CLOSE_POS_MAX = 0.25     # Max close position (0=bottom, 1=top)
-VOL_MULT = 1.5           # Volume spike multiplier vs 20-day MA
-ENTRY_OFFSET_PCT = 0.8   # Entry offset from prev close %
-SL_PCT = 2.5             # Stop loss %
-TARGET1_PCT = 1.2        # Target 1 (book 50%) %
-TARGET2_PCT = 2.8        # Target 2 (book rest) %
-RSI_MAX = 40             # RSI must be below this
-TIME_EXIT = "15:15"      # Exit at this time if no SL/T2
+# ── Market Environment ──
+# "US" for US Tech Leaders ($ Account)
+# "INDIA" for NSE Momentum Leaders (Rs Account)
+MARKET_MODE = os.getenv("MARKET_MODE", "US").upper()
 
-# ── Costs ──
-BROKERAGE = 0.001        # 0.10% per side
-SLIPPAGE = 0.0005        # 0.05% per side
-TOTAL_COST = (BROKERAGE + SLIPPAGE) * 2  # 0.30% round trip
+# ── Strategy Parameters: Volatility Expansion & Trend-Ride ──
+BOLLINGER_PERIOD = 20          # 20-day SMA basis
+BOLLINGER_STD = 2.0            # 2 standard deviations for Upper Band
+FAST_EMA = 9                   # 9-day EMA for short-term momentum
+SLOW_EMA = 21                  # 21-day EMA for primary trend support
+VOLUME_MULT = 1.3              # Min volume spike vs 20-day Volume MA
+HARD_STOP_LOSS_PCT = 4.5       # Strict 4.5% disaster stop loss
 
-# ── Capital ──
-INITIAL_CAPITAL = 200000.0  # Rs 2 lakh paper capital
-PER_TRADE_AMOUNT = 10000.0  # Rs 10,000 fixed per trade
-MAX_TRADES_PER_DAY = 8      # Sweet spot from backtest (8/day = 100% WR)
+# ── Universes ──
+US_UNIVERSE = [
+    "NVDA", "TSLA", "AAPL", "MSFT", "META", "AMZN", "GOOGL",
+    "AMD", "NFLX", "PLTR", "AVGO", "COIN", "ARM", "UBER", "SMCI", "QCOM"
+]
 
-# ── Data ──
-DAILY_PERIOD = "1y"
-INTRA_PERIOD = "60d"
+INDIA_UNIVERSE = [
+    "TRENT", "BEL", "HAL", "PERSISTENT", "DIXON", "BHARTIARTL",
+    "MCX", "CHOLAFIN", "HDFCBANK", "ICICIBANK", "POLYCAB", "VBL", "RELIANCE"
+]
+
+# ── Capital & Portfolio Risk Management ──
+if MARKET_MODE == "US":
+    INITIAL_CAPITAL = float(os.getenv("INITIAL_CAPITAL", "10000.0"))  # $10,000
+    PER_TRADE_AMOUNT = float(os.getenv("PER_TRADE_AMOUNT", "2000.0")) # $2,000 per trade
+    MAX_CONCURRENT_POSITIONS = int(os.getenv("MAX_CONCURRENT", "5"))   # 5 slots
+    TOTAL_COST = 0.0005                                               # 0.05% round trip
+    CURRENCY = "$"
+else:
+    INITIAL_CAPITAL = float(os.getenv("INITIAL_CAPITAL", "100000.0")) # Rs 1 Lakh
+    PER_TRADE_AMOUNT = float(os.getenv("PER_TRADE_AMOUNT", "20000.0"))# Rs 20,000 per trade
+    MAX_CONCURRENT_POSITIONS = int(os.getenv("MAX_CONCURRENT", "5"))  # 5 slots
+    TOTAL_COST = 0.0030                                               # 0.30% round trip
+    CURRENCY = "Rs"
+
+# ── Execution Settings ──
+DATA_PERIOD = "1y"
 MAX_WORKERS = 8
 
-# ── Signal Lifecycle ──
-PENDING_FILE = "data/pending_signals.json"   # watchlist persisted between runs
-GAP_MAX_PCT = 1.5                            # skip entry if D+1 opens >1.5% above prev close
-SIGNAL_EXPIRY_DAYS = 7                       # drop unfilled signals older than this
-EXECUTE_AFTER = "15:15"                      # IST; execute pending only after this (full-day data)
+# ── File Paths & State Tracking ──
+DATA_DIR = "data"
+LOG_DIR = "logs"
+PORTFOLIO_FILE = os.path.join(DATA_DIR, "portfolio.json")
+PENDING_FILE = os.path.join(DATA_DIR, "pending_signals.json")
+EXCEL_FILE = os.path.join(DATA_DIR, "trade_log.xlsx")
 
-# ── Telegram ──
+# ── Telegram Credentials ──
 TG_TOKEN = os.getenv("TELEGRAM_TOKEN") or os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN")
 TG_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID") or os.getenv("CHAT_ID")
-
-# ── File Paths ──
-PORTFOLIO_FILE = "data/portfolio.json"
-LOG_DIR = "logs"

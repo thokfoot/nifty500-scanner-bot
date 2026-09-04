@@ -1,173 +1,180 @@
 """
-Portfolio Management - broker-type paper portfolio.
-
-State (data/portfolio.json):
-{
-  "capital": 200000.0,
-  "initial_capital": 200000.0,
-  "holdings":      [ OPEN positions (filled, awaiting exit) ],
-  "closed_trades": [ completed trade dicts ],
-  "orders":        [ order event audit trail ],
-  "daily_pnl":     { "YYYY-MM-DD": net_rs },
-  "total_pnl": float, "wins": int, "losses": int
-}
+Portfolio & State Management Module
+Tracks cash, active holdings, order lifecycle, trailing stops, and execution discrepancies.
 """
-import json, os
+import os, json, uuid
+from typing import Optional
 from datetime import datetime
-from typing import Dict, List
 import pytz
-from config import PORTFOLIO_FILE, INITIAL_CAPITAL, PER_TRADE_AMOUNT, MAX_TRADES_PER_DAY
+
+from config import (
+    PORTFOLIO_FILE, INITIAL_CAPITAL, PER_TRADE_AMOUNT,
+    MAX_CONCURRENT_POSITIONS, HARD_STOP_LOSS_PCT, TOTAL_COST,
+    CURRENCY
+)
 
 IST = pytz.timezone("Asia/Kolkata")
 
 
-def ist_today() -> str:
-    return datetime.now(IST).strftime("%Y-%m-%d")
-
-
-def _default() -> Dict:
+def default_portfolio() -> dict:
     return {
-        "capital": INITIAL_CAPITAL,
-        "initial_capital": INITIAL_CAPITAL,
-        "holdings": [],
-        "closed_trades": [],
-        "orders": [],
-        "daily_pnl": {},
-        "total_pnl": 0.0,
-        "wins": 0,
-        "losses": 0,
+        "capital": float(INITIAL_CAPITAL),
+        "invested": 0.0,
+        "positions": {},       # ticker -> position dict
+        "closed_trades": [],   # list of closed trade dicts
+        "orders": [],          # audit list of all orders
+        "discrepancies": [],   # audit list of flagged anomalies/mistakes
+        "last_updated": datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")
     }
 
 
-def load_portfolio() -> Dict:
-    if os.path.exists(PORTFOLIO_FILE):
-        try:
-            with open(PORTFOLIO_FILE) as f:
-                data = json.load(f)
-        except Exception:
-            data = _default()
-        # migrate legacy schema
-        if "open_positions" in data and "holdings" not in data:
-            data["holdings"] = data.pop("open_positions")
-        for k, v in _default().items():
-            data.setdefault(k, v)
-        return data
-    return _default()
-
-
-def save_portfolio(portfolio: Dict):
+def load_portfolio() -> dict:
     os.makedirs(os.path.dirname(PORTFOLIO_FILE), exist_ok=True)
-    with open(PORTFOLIO_FILE, "w") as f:
-        json.dump(portfolio, f, indent=2, default=str)
+    if not os.path.exists(PORTFOLIO_FILE):
+        p = default_portfolio()
+        save_portfolio(p)
+        return p
+    try:
+        with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
+            p = json.load(f)
+            p.setdefault("capital", float(INITIAL_CAPITAL))
+            p.setdefault("invested", 0.0)
+            p.setdefault("positions", {})
+            p.setdefault("closed_trades", [])
+            p.setdefault("orders", [])
+            p.setdefault("discrepancies", [])
+            return p
+    except Exception as e:
+        print(f"[PORTFOLIO] Load error: {e}, recreating default")
+        p = default_portfolio()
+        save_portfolio(p)
+        return p
 
 
-def position_size(entry_price: float) -> int:
-    """Rs 10,000 fixed per trade."""
-    return max(int(PER_TRADE_AMOUNT / entry_price), 1)
+def save_portfolio(p: dict):
+    p["last_updated"] = datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")
+    os.makedirs(os.path.dirname(PORTFOLIO_FILE), exist_ok=True)
+    tmp = PORTFOLIO_FILE + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(p, f, indent=2, default=str)
+    os.replace(tmp, PORTFOLIO_FILE)
 
 
-def trades_taken(portfolio: Dict, trade_date: str) -> int:
-    """Entries filled on a given trade date (closed + still open)."""
-    n = sum(1 for t in portfolio.get("closed_trades", [])
-            if t.get("entry_date") == trade_date)
-    n += sum(1 for h in portfolio.get("holdings", [])
-             if h.get("trade_date") == trade_date)
-    return n
+def can_take_trade(p: dict) -> bool:
+    """Check if capital and slot limits allow taking another trade."""
+    open_count = len(p.get("positions", {}))
+    has_slot = open_count < MAX_CONCURRENT_POSITIONS
+    has_cash = p.get("capital", 0.0) >= PER_TRADE_AMOUNT
+    return has_slot and has_cash
 
 
-def can_take_trade(portfolio: Dict, trade_date: str) -> bool:
-    return trades_taken(portfolio, trade_date) < MAX_TRADES_PER_DAY
+def add_order(p: dict, ticker: str, side: str, order_type: str,
+              expected_price: float, fill_price: float, qty: int,
+              status: str = "FILLED", note: str = "") -> dict:
+    """Log order to audit trail with slippage tracking."""
+    slippage = round(fill_price - expected_price, 2) if (fill_price and expected_price) else 0.0
+    order = {
+        "Timestamp": datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S"),
+        "Order_ID": uuid.uuid4().hex[:10].upper(),
+        "Ticker": ticker,
+        "Side": side,
+        "Type": order_type,
+        "Expected_Price": round(expected_price, 2) if expected_price else None,
+        "Fill_Price": round(fill_price, 2) if fill_price else None,
+        "Slippage": slippage,
+        "Qty": qty,
+        "Status": status,
+        "Note": note
+    }
+    p.setdefault("orders", []).append(order)
+    return order
 
 
-def get_open_positions(portfolio: Dict) -> List[Dict]:
-    return [h for h in portfolio.get("holdings", []) if h.get("status") == "OPEN"]
+def add_discrepancy(p: dict, category: str, ticker: str, details: str, severity: str = "WARNING"):
+    """Record an anomaly or potential bot mistake for review."""
+    item = {
+        "Timestamp": datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S"),
+        "Category": category,      # SLIPPAGE_ALERT, MISSED_EXIT, GAP_DOWN, DATA_ANOMALY
+        "Ticker": ticker,
+        "Severity": severity,      # INFO, WARNING, CRITICAL
+        "Details": details
+    }
+    p.setdefault("discrepancies", []).append(item)
+    print(f"[AUDIT DISCREPANCY] [{severity}] {ticker}: {details}")
 
 
-def find_holding(portfolio: Dict, ticker: str, trade_date: str = None):
-    for h in portfolio.get("holdings", []):
-        if h["ticker"] == ticker and h.get("status") == "OPEN":
-            if trade_date is None or h.get("trade_date") == trade_date:
-                return h
-    return None
+def open_position(p: dict, ticker: str, entry_price: float, entry_date: str) -> Optional[dict]:
+    """Open new position with strict sizing and risk control."""
+    if not can_take_trade(p):
+        return None
+
+    qty = max(int(PER_TRADE_AMOUNT / entry_price), 1)
+    actual_invested = round(qty * entry_price, 2)
+    sl_price = round(entry_price * (1.0 - HARD_STOP_LOSS_PCT / 100.0), 2)
+
+    p["capital"] -= actual_invested
+    p["invested"] += actual_invested
+
+    pos = {
+        "ticker": ticker,
+        "entry_date": entry_date,
+        "entry_price": round(entry_price, 2),
+        "qty": qty,
+        "invested": actual_invested,
+        "current_sl": sl_price,
+        "highest_high": round(entry_price, 2),
+        "days_held": 0,
+        "last_price": round(entry_price, 2),
+        "unrealized_pnl_pct": 0.0
+    }
+    p["positions"][ticker] = pos
+
+    add_order(p, ticker, "BUY", "MARKET", expected_price=entry_price,
+              fill_price=entry_price, qty=qty, status="FILLED", note="Entry Breakout")
+    return pos
 
 
-def add_position(portfolio: Dict, pos: Dict):
-    portfolio.setdefault("holdings", []).append(pos)
+def close_position(p: dict, ticker: str, exit_price: float, exit_date: str,
+                   exit_reason: str) -> Optional[dict]:
+    """Close active position and record realized P&L."""
+    pos = p.get("positions", {}).pop(ticker, None)
+    if not pos:
+        return None
 
+    entry_price = pos["entry_price"]
+    qty = pos["qty"]
+    invested = pos["invested"]
 
-def remove_position(portfolio: Dict, pos: Dict):
-    portfolio["holdings"] = [
-        h for h in portfolio.get("holdings", [])
-        if not (h["ticker"] == pos["ticker"]
-                and h.get("trade_date") == pos.get("trade_date")
-                and h.get("status") == "OPEN")
-    ]
+    gross_pct = round((exit_price - entry_price) / entry_price * 100.0, 3)
+    net_pct = round(gross_pct - (TOTAL_COST * 100.0), 3)
+    pnl_amount = round(invested * (net_pct / 100.0), 2)
+    returned_cash = round(invested + pnl_amount, 2)
 
+    p["capital"] += returned_cash
+    p["invested"] = max(0.0, round(p["invested"] - invested, 2))
 
-def close_position(portfolio: Dict, pos: Dict, trade: Dict) -> Dict:
-    """Move an open holding to closed_trades with P&L accounting."""
-    remove_position(portfolio, pos)
-    record_closed_trade(portfolio, trade)
+    trade = {
+        "ticker": ticker,
+        "entry_date": pos["entry_date"],
+        "exit_date": exit_date,
+        "entry_price": entry_price,
+        "exit_price": round(exit_price, 2),
+        "qty": qty,
+        "invested": invested,
+        "pnl_amount": pnl_amount,
+        "gross_pnl_pct": gross_pct,
+        "net_pnl_pct": net_pct,
+        "exit_reason": exit_reason,
+        "days_held": pos.get("days_held", 0)
+    }
+    p.setdefault("closed_trades", []).append(trade)
+
+    add_order(p, ticker, "SELL", "MARKET", expected_price=exit_price,
+              fill_price=exit_price, qty=qty, status="FILLED", note=exit_reason)
+
+    # Check for discrepancy: if loss exceeded planned hard SL by > 1% (e.g. gap down)
+    if net_pct < -(HARD_STOP_LOSS_PCT + 1.0):
+        add_discrepancy(p, "GAP_DOWN_SLIPPAGE", ticker,
+                        f"Loss of {net_pct:.2f}% exceeded target SL of -{HARD_STOP_LOSS_PCT}%. Exit: {exit_price}")
+
     return trade
-
-
-def record_closed_trade(portfolio: Dict, trade: Dict) -> Dict:
-    """Record a completed trade into the books (idempotent per call site)."""
-    net_pnl = float(trade.get("net_pnl_pct", 0.0))
-    investment = float(trade.get("entry_price", 0)) * int(trade.get("qty", 0))
-    pnl_amount = round(investment * net_pnl / 100.0, 2)
-
-    portfolio.setdefault("closed_trades", []).append(trade)
-    portfolio["total_pnl"] = round(portfolio.get("total_pnl", 0.0) + net_pnl, 3)
-    if net_pnl > 0:
-        portfolio["wins"] = portfolio.get("wins", 0) + 1
-    else:
-        portfolio["losses"] = portfolio.get("losses", 0) + 1
-    portfolio["capital"] = round(
-        portfolio.get("capital", INITIAL_CAPITAL) + pnl_amount, 2)
-
-    dp = portfolio.setdefault("daily_pnl", {})
-    d = trade.get("exit_date") or ist_today()
-    dp[d] = round(dp.get(d, 0.0) + pnl_amount, 2)
-    return trade
-
-
-def add_order(portfolio: Dict, order: Dict):
-    orders = portfolio.setdefault("orders", [])
-    orders.append(order)
-    if len(orders) > 2000:            # cap audit trail size
-        del orders[:len(orders) - 2000]
-
-
-def get_portfolio_summary(portfolio: Dict) -> str:
-    cap = portfolio.get("capital", INITIAL_CAPITAL)
-    init = portfolio.get("initial_capital", INITIAL_CAPITAL)
-    pnl = portfolio.get("total_pnl", 0.0)
-    wins = portfolio.get("wins", 0)
-    losses = portfolio.get("losses", 0)
-    total = wins + losses
-    wr = round(wins / total * 100, 1) if total else 0.0
-    ret = round((cap - init) / init * 100, 2)
-
-    lines = [
-        "PORTFOLIO SUMMARY",
-        f"Capital: Rs {cap:,.0f} ({ret:+.2f}%)",
-        f"Total P&L: Rs {pnl:+,.0f}",
-        f"Win/Loss: {wins}W / {losses}L ({wr}% WR)",
-        f"Open Positions: {len(get_open_positions(portfolio))}",
-    ]
-    holdings = get_open_positions(portfolio)
-    if holdings:
-        lines.append("")
-        lines.append("OPEN POSITIONS:")
-        for p in holdings:
-            be = " [SL@BE]" if p.get("half_booked") else ""
-            lines.append(f"  {p['ticker']} @ Rs {p['entry_price']} x{p['qty']}"
-                         f" | SL {p['sl_eff']} T1 {p['t1']} T2 {p['t2']}{be}")
-    closed = portfolio.get("closed_trades", [])
-    if closed:
-        lines.append("")
-        lines.append("RECENT CLOSED:")
-        for t in closed[-5:]:
-            lines.append(f"  {t['ticker']} {t['exit_reason']} | {t.get('net_pnl_pct', 0):+.2f}% net")
-    return "\n".join(lines)
