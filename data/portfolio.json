@@ -1,5 +1,5 @@
 {
-  "capital": 197025.72,
+  "capital": 198821.93,
   "initial_capital": 200000.0,
   "holdings": [],
   "closed_trades": [
@@ -619,6 +619,20 @@
         "sma20": 2821.32,
         "below_sma": "True"
       }
+    },
+    {
+      "ticker": "TSLA",
+      "entry_date": "2026-09-04",
+      "exit_date": "2026-09-04",
+      "entry_price": 376.37,
+      "exit_price": 359.43,
+      "qty": 5,
+      "invested": 1881.85,
+      "pnl_amount": -85.64,
+      "gross_pnl_pct": -4.501,
+      "net_pnl_pct": -4.551,
+      "exit_reason": "HARD_STOP_LOSS",
+      "days_held": 2
     }
   ],
   "orders": [
@@ -2326,6 +2340,19 @@
       "qty": 5,
       "status": "FILLED",
       "note": "Entry Breakout"
+    },
+    {
+      "Timestamp": "2026-09-04 10:49:11",
+      "Order_ID": "89CC5EDBCD",
+      "Ticker": "TSLA",
+      "Side": "SELL",
+      "Type": "MARKET",
+      "Expected_Price": 359.43,
+      "Fill_Price": 359.43,
+      "Slippage": 0.0,
+      "Qty": 5,
+      "Status": "FILLED",
+      "Note": "HARD_STOP_LOSS"
     }
   ],
   "daily_pnl": {
@@ -2340,21 +2367,8 @@
   "total_pnl": -14.04,
   "wins": 4,
   "losses": 13,
-  "invested": 1881.85,
-  "positions": {
-    "TSLA": {
-      "ticker": "TSLA",
-      "entry_date": "2026-09-04",
-      "entry_price": 376.37,
-      "qty": 5,
-      "invested": 1881.85,
-      "current_sl": 359.43,
-      "highest_high": 384.0400085449219,
-      "days_held": 1,
-      "last_price": 376.37,
-      "unrealized_pnl_pct": -0.0
-    }
-  },
+  "invested": 0.0,
+  "positions": {},
   "discrepancies": [
     {
       "timestamp": "2026-09-04 08:12:51",
@@ -2371,5 +2385,5 @@
       "Details": "No bar data available for today 2026-09-04"
     }
   ],
-  "last_updated": "2026-09-04 08:13:24"
+  "last_updated": "2026-09-04 10:49:12"
 }
