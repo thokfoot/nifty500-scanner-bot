@@ -33,7 +33,9 @@
         "volume_spike": true,
         "below_vwap": true,
         "below_sma": true
-      }
+      },
+      "invested": 9779.98,
+      "pnl_amount": -273.94
     },
     {
       "ticker": "ASTERDM",
@@ -64,7 +66,9 @@
         "volume_spike": true,
         "below_vwap": true,
         "below_sma": true
-      }
+      },
+      "invested": 9873.76,
+      "pnl_amount": -5.83
     },
     {
       "ticker": "VBL",
@@ -101,7 +105,9 @@
         "rsi_ok": "True",
         "sma20": 438.33,
         "below_sma": "True"
-      }
+      },
+      "invested": 9778.91,
+      "pnl_amount": -148.25
     },
     {
       "ticker": "EMAMILTD",
@@ -138,7 +144,9 @@
         "rsi_ok": "True",
         "sma20": 402.36,
         "below_sma": "True"
-      }
+      },
+      "invested": 9999.6,
+      "pnl_amount": -139.19
     },
     {
       "ticker": "AAVAS",
@@ -175,7 +183,9 @@
         "rsi_ok": "True",
         "sma20": 1367.63,
         "below_sma": "True"
-      }
+      },
+      "invested": 8857.1,
+      "pnl_amount": -63.68
     },
     {
       "ticker": "ADANIENSOL",
@@ -212,7 +222,9 @@
         "rsi_ok": "True",
         "sma20": 1589.38,
         "below_sma": "True"
-      }
+      },
+      "invested": 8664.9,
+      "pnl_amount": -242.62
     },
     {
       "ticker": "FIRSTCRY",
@@ -249,7 +261,9 @@
         "rsi_ok": "True",
         "sma20": 202.96,
         "below_sma": "True"
-      }
+      },
+      "invested": 9936.54,
+      "pnl_amount": -278.22
     },
     {
       "ticker": "HDFCBANK",
@@ -286,7 +300,9 @@
         "rsi_ok": "True",
         "sma20": 726.61,
         "below_sma": "True"
-      }
+      },
+      "invested": 9860.48,
+      "pnl_amount": 82.63
     },
     {
       "ticker": "3MINDIA",
@@ -323,7 +339,9 @@
         "rsi_ok": "True",
         "sma20": 34912.0,
         "below_sma": "True"
-      }
+      },
+      "invested": 33053.44,
+      "pnl_amount": 162.29
     },
     {
       "ticker": "ADANIENSOL",
@@ -360,7 +378,9 @@
         "rsi_ok": "True",
         "sma20": 1574.14,
         "below_sma": "True"
-      }
+      },
+      "invested": 9580.62,
+      "pnl_amount": 126.56
     },
     {
       "ticker": "BIKAJI",
@@ -397,7 +417,9 @@
         "rsi_ok": "True",
         "sma20": 615.72,
         "below_sma": "True"
-      }
+      },
+      "invested": 9455.68,
+      "pnl_amount": -60.04
     },
     {
       "ticker": "JAINREC",
@@ -434,7 +456,9 @@
         "rsi_ok": "True",
         "sma20": 296.43,
         "below_sma": "True"
-      }
+      },
+      "invested": 9732.1,
+      "pnl_amount": 100.63
     },
     {
       "ticker": "MARUTI",
@@ -471,7 +495,9 @@
         "rsi_ok": "True",
         "sma20": 13718.25,
         "below_sma": "True"
-      }
+      },
+      "invested": 12838.46,
+      "pnl_amount": -27.99
     },
     {
       "ticker": "JWL",
@@ -508,7 +534,9 @@
         "rsi_ok": "True",
         "sma20": 251.87,
         "below_sma": "True"
-      }
+      },
+      "invested": 9857.22,
+      "pnl_amount": -72.65
     },
     {
       "ticker": "KEI",
@@ -545,7 +573,9 @@
         "rsi_ok": "True",
         "sma20": 5634.14,
         "below_sma": "True"
-      }
+      },
+      "invested": 5305.22,
+      "pnl_amount": -148.55
     },
     {
       "ticker": "POLYCAB",
@@ -582,7 +612,9 @@
         "rsi_ok": "True",
         "sma20": 9170.92,
         "below_sma": "True"
-      }
+      },
+      "invested": 8824.34,
+      "pnl_amount": -46.77
     },
     {
       "ticker": "RRKABEL",
@@ -619,7 +651,9 @@
         "rsi_ok": "True",
         "sma20": 2821.32,
         "below_sma": "True"
-      }
+      },
+      "invested": 7923.0,
+      "pnl_amount": -56.81
     }
   ],
   "orders": [
